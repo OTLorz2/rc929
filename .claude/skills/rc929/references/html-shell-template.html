@@ -1,0 +1,498 @@
+<!--
+  COPY this shell when building research HTML. Customize content only inside <main> and <header>.
+  Do NOT remove: layout widths, sec-* ids, diagram modal, mermaid source preservation, TOC sync.
+
+  ID rule (fixes anchor bugs): section id="sec-<slug>" — never bare names like "plugins".
+  Mermaid subgraph/node ids: prefix sg_ / n_ (e.g. sg_plugins) — never collide with sec-*.
+  TOC: href="#sec-<slug>" and link text MUST equal that section's <h2> exactly.
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{TITLE}}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f1214;
+      --surface: #171c1f;
+      --surface-2: #1e2529;
+      --text: #e8ecef;
+      --muted: #9aa8b3;
+      --accent: #3dd68c;
+      --accent-dim: #2a9d63;
+      --border: #2a3439;
+      --warn: #e8b84a;
+      --diagram-bg: #13181b;
+      --content-max: min(1440px, 98vw);
+      --main-pad: clamp(1rem, 3vw, 2.5rem);
+    }
+    [data-theme="light"] {
+      --bg: #f4f1eb;
+      --surface: #fffef9;
+      --surface-2: #ebe6dc;
+      --text: #1a2228;
+      --muted: #5c6b76;
+      --accent: #1a7a4c;
+      --accent-dim: #0f5c38;
+      --border: #d4cdc0;
+      --warn: #9a6b10;
+      --diagram-bg: #faf8f4;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+    body {
+      margin: 0;
+      font-family: 'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+      font-size: 17px;
+      font-weight: 400;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page { width: var(--content-max); margin: 0 auto; padding: 0 var(--main-pad) 4rem; }
+
+    header.page {
+      padding: 2.5rem 0 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-weight: 600;
+      font-size: clamp(1.75rem, 3.5vw, 2.35rem);
+      margin: 0 0 0.6rem;
+      line-height: 1.25;
+    }
+    .meta { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+    .question-box {
+      margin-top: 1.25rem;
+      padding: 1.1rem 1.35rem;
+      background: var(--surface);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(200px, 240px) minmax(0, 1fr);
+      gap: clamp(1.25rem, 3vw, 2.5rem);
+      align-items: start;
+      padding-top: 1.5rem;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      aside.sidebar { position: static; }
+    }
+
+    aside.sidebar {
+      position: sticky;
+      top: 0;
+      max-height: 100vh;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+      border-right: 1px solid var(--border);
+    }
+    .sidebar-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .sidebar-card strong { color: var(--text); display: block; margin-bottom: 0.35rem; font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    nav.toc a {
+      display: block;
+      padding: 0.45rem 0;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 500;
+      line-height: 1.35;
+      border-bottom: 1px solid transparent;
+    }
+    nav.toc a:hover, nav.toc a.active { color: var(--accent); }
+
+    main { min-width: 0; max-width: 100%; }
+    section {
+      margin-bottom: 3rem;
+      scroll-margin-top: 1.25rem;
+    }
+    section h2 {
+      font-family: 'Source Sans 3', sans-serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+      margin: 0 0 1.25rem;
+      padding-bottom: 0.55rem;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.3;
+    }
+    section h3 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--accent-dim); }
+
+    /* Summary: card grid, not dense bullet wall */
+    .summary-lead {
+      font-size: 1.05rem;
+      color: var(--muted);
+      margin: 0 0 1.25rem;
+      line-height: 1.65;
+      max-width: 62em;
+    }
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem 1.25rem;
+    }
+    .summary-card .k {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+    .summary-card p { margin: 0; font-size: 0.98rem; line-height: 1.55; }
+
+    code, .ref {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 0.86em;
+      font-weight: 500;
+      background: var(--surface-2);
+      color: var(--accent);
+      padding: 0.12em 0.4em;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .diagram-wrap {
+      position: relative;
+      background: var(--diagram-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      cursor: zoom-in;
+    }
+    .diagram-wrap::after {
+      content: '点击放大';
+      position: absolute;
+      top: 0.65rem;
+      right: 0.75rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      pointer-events: none;
+    }
+    .diagram-caption { font-size: 0.82rem; color: var(--muted); margin-top: 0.85rem; line-height: 1.5; }
+    .mermaid { text-align: center; }
+    .mermaid svg { max-width: 100%; height: auto; }
+
+    /* Diagram lightbox */
+    .diagram-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.82);
+      flex-direction: column;
+    }
+    .diagram-modal.open { display: flex; }
+    .diagram-modal-toolbar {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .diagram-modal-toolbar button {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.4rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-family: inherit;
+    }
+    .diagram-modal-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+    .diagram-modal-body {
+      flex: 1;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .diagram-modal-body .mermaid-zoom-host {
+      transform-origin: center center;
+      transition: transform 0.12s ease;
+    }
+    .diagram-modal-hint {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 0.5rem;
+    }
+
+    .card-grid { display: grid; gap: 1rem; }
+    @media (min-width: 700px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+    .step-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem 1.25rem;
+    }
+
+    details { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin: 0.6rem 0; }
+    details summary { padding: 0.75rem 1rem; cursor: pointer; font-weight: 600; }
+    details pre { margin: 0; padding: 1rem; overflow-x: auto; font-size: 0.8rem; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+    th, td { text-align: left; padding: 0.65rem 0.8rem; border-bottom: 1px solid var(--border); }
+
+    footer.page {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .theme-btn {
+      position: fixed;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      z-index: 100;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body>
+  <header class="page">
+    <h1>{{TITLE}}</h1>
+    <p class="meta">{{META}}</p>
+    <div class="question-box"><strong>研究问题：</strong>{{QUESTION}}</div>
+  </header>
+
+  <div class="page layout">
+    <aside class="sidebar" aria-label="侧栏">
+      <div class="sidebar-card">
+        <strong>阅读提示</strong>
+        点击图表可全屏放大；滚轮或工具栏缩放。目录项与章节标题一致。
+      </div>
+      <nav class="toc" aria-label="目录">
+        <a href="#sec-summary">要点</a>
+        <!-- href="#sec-<slug>" must match <section id="sec-<slug>"><h2>…</h2> -->
+      </nav>
+    </aside>
+
+    <main>
+      <section id="sec-summary">
+        <h2>要点</h2>
+        <p class="summary-lead">一句话结论，降低首屏压迫感。</p>
+        <div class="summary-cards">
+          <article class="summary-card">
+            <div class="k">发现 1</div>
+            <p>…</p>
+          </article>
+          <article class="summary-card">
+            <div class="k">发现 2</div>
+            <p>…</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="sec-diagrams">
+        <h2>分层架构（概览）</h2>
+        <div class="diagram-wrap" data-diagram-title="分层架构（概览）">
+          <pre class="mermaid">
+flowchart TB
+  subgraph sg_entry["入口层"]
+    A["main"]
+  end
+          </pre>
+          <p class="diagram-caption">Sources: …</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page">{{FOOTER}}</footer>
+
+  <div class="diagram-modal" id="diagramModal" role="dialog" aria-modal="true" aria-label="图表放大">
+    <div class="diagram-modal-toolbar">
+      <button type="button" id="zoomOut" aria-label="缩小">−</button>
+      <button type="button" id="zoomReset" aria-label="重置">100%</button>
+      <button type="button" id="zoomIn" aria-label="放大">+</button>
+      <button type="button" id="zoomClose" aria-label="关闭">关闭</button>
+    </div>
+    <div class="diagram-modal-body">
+      <div class="mermaid-zoom-host" id="diagramZoomHost"></div>
+    </div>
+    <p class="diagram-modal-hint">滚轮缩放 · Esc 关闭</p>
+  </div>
+
+  <button class="theme-btn" type="button" id="themeToggle" aria-label="切换主题">浅色模式</button>
+
+  <script>
+    (function () {
+      document.querySelectorAll('pre.mermaid').forEach(function (el) {
+        el.dataset.mermaidSource = el.textContent.trim();
+      });
+
+      function getTheme() {
+        return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      }
+
+      function applyPageTheme(t) {
+        document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : '');
+        document.getElementById('themeToggle').textContent = t === 'light' ? '深色模式' : '浅色模式';
+      }
+
+      async function renderMermaid() {
+        var theme = getTheme() === 'light' ? 'neutral' : 'dark';
+        mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', theme: theme });
+        var nodes = document.querySelectorAll('pre.mermaid');
+        nodes.forEach(function (el) {
+          var src = el.dataset.mermaidSource || el.textContent.trim();
+          el.dataset.mermaidSource = src;
+          el.textContent = src;
+          el.removeAttribute('data-processed');
+        });
+        await mermaid.run({ nodes: nodes });
+      }
+
+      var saved = localStorage.getItem('research-html-theme');
+      var initial = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      applyPageTheme(initial);
+      renderMermaid();
+
+      document.getElementById('themeToggle').addEventListener('click', function () {
+        var next = getTheme() === 'light' ? 'dark' : 'light';
+        localStorage.setItem('research-html-theme', next);
+        applyPageTheme(next);
+        renderMermaid();
+      });
+
+      /* Reliable in-page anchors: section sec-* only */
+      document.querySelectorAll('nav.toc a[href^="#sec-"]').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+          var id = link.getAttribute('href').slice(1);
+          var el = document.getElementById(id);
+          if (el) {
+            e.preventDefault();
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            history.replaceState(null, '', '#' + id);
+          }
+        });
+      });
+
+      var tocLinks = document.querySelectorAll('nav.toc a');
+      var sections = Array.from(tocLinks).map(function (a) {
+        var id = a.getAttribute('href').replace('#', '');
+        return document.getElementById(id);
+      }).filter(Boolean);
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            var id = e.target.id;
+            tocLinks.forEach(function (a) {
+              a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+            });
+          }
+        });
+      }, { rootMargin: '-20% 0px -55% 0px' });
+      sections.forEach(function (s) { observer.observe(s); });
+
+      /* Diagram lightbox */
+      var modal = document.getElementById('diagramModal');
+      var host = document.getElementById('diagramZoomHost');
+      var scale = 1;
+
+      function setScale(s) {
+        scale = Math.min(3, Math.max(0.4, s));
+        host.style.transform = 'scale(' + scale + ')';
+        document.getElementById('zoomReset').textContent = Math.round(scale * 100) + '%';
+      }
+
+      async function openDiagram(wrap) {
+        var pre = wrap.querySelector('pre.mermaid');
+        if (!pre) return;
+        var src = pre.dataset.mermaidSource || pre.textContent.trim();
+        host.innerHTML = '';
+        var clone = document.createElement('pre');
+        clone.className = 'mermaid';
+        clone.textContent = src;
+        host.appendChild(clone);
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        setScale(1);
+        var theme = getTheme() === 'light' ? 'neutral' : 'dark';
+        mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', theme: theme });
+        await mermaid.run({ nodes: [clone] });
+      }
+
+      function closeDiagram() {
+        modal.classList.remove('open');
+        host.innerHTML = '';
+        document.body.style.overflow = '';
+      }
+
+      document.querySelectorAll('.diagram-wrap').forEach(function (wrap) {
+        wrap.addEventListener('click', function (e) {
+          if (e.target.closest('a')) return;
+          openDiagram(wrap);
+        });
+      });
+      document.getElementById('zoomIn').addEventListener('click', function () { setScale(scale + 0.2); });
+      document.getElementById('zoomOut').addEventListener('click', function () { setScale(scale - 0.2); });
+      document.getElementById('zoomReset').addEventListener('click', function () { setScale(1); });
+      document.getElementById('zoomClose').addEventListener('click', closeDiagram);
+      modal.addEventListener('click', function (e) { if (e.target === modal) closeDiagram(); });
+      document.addEventListener('keydown', function (e) {
+        if (!modal.classList.contains('open')) return;
+        if (e.key === 'Escape') closeDiagram();
+      });
+      document.getElementById('diagramZoomHost').addEventListener('wheel', function (e) {
+        if (!modal.classList.contains('open')) return;
+        e.preventDefault();
+        setScale(scale + (e.deltaY < 0 ? 0.15 : -0.15));
+      }, { passive: false });
+    })();
+  </script>
+</body>
+</html>

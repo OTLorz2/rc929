@@ -1,0 +1,18 @@
+# 远程仓库仅保留 rc929 skill；其余本地内容一律不提交
+
+# 忽略仓库根目录下所有内容
+/*
+
+# 保留本文件
+!/.gitignore
+
+# 仅放行 rc929 skill 路径（需逐级解除父目录忽略）
+!/.claude/
+/.claude/*
+!/.claude/skills/
+/.claude/skills/*
+!/.claude/skills/rc929/
+!/.claude/skills/rc929/**
+
+# skill 内的 evals 不提交
+/.claude/skills/rc929/evals/
