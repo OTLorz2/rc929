@@ -1,6 +1,6 @@
 ---
 name: rc929
-description: Deep, accurate codebase exploration for user research questions, delivered as ONE self-contained HTML report with diagrams and interactive navigation. Use whenever the user asks to explore, map, trace, document, or research how code works in a repository (data flows, architecture, class dependencies, request lifecycles, module boundaries, agent/tool wiring)—even if they do not say "HTML" or "report". Prefer this over markdown research dumps when the goal is understanding a codebase visually. Accuracy of findings is mandatory; aesthetics support comprehension, never override facts.
+description: Deep, accurate codebase exploration for user research questions, delivered as ONE self-contained HTML report with diagrams and interactive navigation. Use whenever the user asks to explore, map, trace, document, or research how code works in a repository (data flows, architecture, class dependencies, request lifecycles, module boundaries, agent/tool wiring)—even if they do not say "HTML" or "report". Prefer this over markdown research dumps when the goal is understanding a codebase visually. Also use when the user drops a new template.html into the rc929 skill folder to restyle reports. Accuracy of findings is mandatory; aesthetics support comprehension, never override facts.
 ---
 
 # rc929 — Codebase Research → Single HTML Report
@@ -18,14 +18,38 @@ Turn a research question into **one** accurate, visual, interactive HTML file. T
 
 | File | Read when |
 |------|-----------|
+| `references/template-sync-guide.md` | **First**, if `template.html` exists in this skill's root directory |
 | `references/codebase-locator.md` | Before/during discovery — finding WHERE files live |
 | `references/codebase-analyzer.md` | After locators — tracing HOW code works |
 | `references/html-report-guide.md` | Before writing HTML — structure, mermaid rules, UI patterns |
-| `references/html-shell-template.html` | **Copy this shell** — user-template style (Fraunces/Libre Baskerville), toc-rail, diagram-fs-btn fullscreen, mermaid JS |
+| `references/html-shell-template.html` | **Copy this shell** — layout, CSS, JS for the current template generation |
 
 For visual polish, apply principles from the **frontend-design** skill (distinctive typography, cohesive palette, intentional motion)—but never sacrifice accuracy for aesthetics.
 
 ## Research workflow
+
+### 0. Template sync (if needed)
+
+**Before intake**, check whether `template.html` exists in **this skill's root directory** (alongside `SKILL.md`).
+
+```
+Glob or Read: .claude/skills/rc929/template.html
+```
+
+| Result | Action |
+|--------|--------|
+| **Not found** | Skip to §1 Intake |
+| **Found** | Spawn a **subagent** to sync — **do not** do this in the main context |
+
+**Why subagent:** Template sync rewrites `html-shell-template.html` and `html-report-guide.md` (large diffs). The main agent needs full context for the user's research; offloading sync prevents context exhaustion before exploration begins.
+
+**Subagent task:** Follow `references/template-sync-guide.md` end-to-end:
+1. Read `template.html` for **UI structure, CSS, JS, layout only** — ignore all research content
+2. Update `references/html-shell-template.html` (generic shell with placeholders)
+3. Update `references/html-report-guide.md` (visual system + UI rules to match)
+4. **Delete** `template.html` from the skill root
+
+Wait for the subagent to finish. Briefly note what changed (fonts, layout, toc style). Then proceed to §1 — read the **updated** guide and shell when building HTML.
 
 ### 1. Intake
 
@@ -68,7 +92,7 @@ Act as **codebase-analyzer** (see `references/codebase-analyzer.md`): Read entry
 **Lead with diagrams**, then short supporting sections:
 
 - Executive visual: 1–2 hero diagrams answering the question
-- **要点**: `summary-list` ordered list (3–6 items, `<strong>` lead terms) — avoid a dense prose wall on first scroll
+- **要点**: summary list (format per `html-report-guide.md` — ordered or unordered per current shell)
 - Evidence panels: collapsible `file:line` snippets (keep snippets short; link to path)
 - Optional: comparison table, timeline, or "key symbols" glossary
 
@@ -76,15 +100,14 @@ Cap prose: prefer cards, diagrams, tables, and `<details>` over long paragraphs.
 
 ### 5. Build the single HTML file
 
-Follow `references/html-report-guide.md` and **base the page on** `references/html-shell-template.html`. If the user attached `template.html`, read it only to confirm style — **never modify it**; the shell already encodes its layout/CSS/JS. Replace template sample content with this research's findings.
+Follow `references/html-report-guide.md` and **base the page on** `references/html-shell-template.html`. Replace all placeholder/sample content with **this research's** findings only.
 
 - Filename: `research-<kebab-topic>-<YYYY-MM-DD>.html` (or user-specified path)
-- **Layout**: copy shell intact — hero grid with plain `<h1>` (one line, no `<em>`), `--page-max: 1400px`, fixed `.toc-rail`, ambient blobs, scroll progress
-- **Section ids**: `id="<slug>"` (e.g. `summary`, `diagrams`) — Mermaid subgraph/node ids must use `sg_` / `n_` prefixes and never equal a section id
-- **Typography**: Libre Baskerville **16px** body; Fraunces display headings; IBM Plex Mono for `.ref`. Static `<code class="ref">` only
-- **TOC**: numbered links in `nav.toc-rail ol`; `href="#<slug>"` and link text **exactly** equals `<h2>`
-- **Diagrams**: preserve shell `setupDiagramFullscreen()` — `.diagram-fs-btn` on hover, fullscreen overlay, Ctrl+wheel zoom, Esc close
-- **Mermaid**: `data-mermaid-source` preserved; call `setupDiagramFullscreen()` after render
+- **Layout**: copy shell CSS/JS/layout intact; fill header + `<main>` with research content
+- **Section ids**: per guide (typically `id="<slug>"`) — Mermaid subgraph/node ids must use `sg_` / `n_` prefixes and never equal a section id
+- **TOC**: per guide — link text **exactly** equals `<h2>`
+- **Diagrams**: preserve shell diagram interactions (fullscreen button if present in shell)
+- **Mermaid**: `data-mermaid-source` preserved where shell uses it; re-init after render if shell requires
 
 **Do not** split into multiple HTML pages or export PDF unless asked.
 
@@ -95,6 +118,7 @@ Tell the user:
 - 2–3 sentence factual summary
 - What to open first (which diagram/section)
 - Any `待验证` items or open gaps
+- If template sync ran: note shell was updated and `template.html` consumed
 
 ## Quality checklist (before delivery)
 
@@ -104,37 +128,40 @@ Tell the user:
 - [ ] Every diagram node/edge traceable to code (or labeled hypothetical)
 - [ ] No improvement recommendations unless requested
 - [ ] Metadata block (date, commit, repo) present
-- [ ] Open in browser mentally: mermaid syntax valid; theme toggle re-renders diagrams
-- [ ] TOC labels match every `<h2>` exactly; no click-only ref widgets
-- [ ] Body font readable (Libre Baskerville 16px); 要点 uses summary-list
+- [ ] Open in browser mentally: mermaid syntax valid; theme toggle re-renders diagrams (if shell has theme toggle)
+- [ ] TOC labels match every `<h2>` exactly
 - [ ] Section ids unique; Mermaid ids prefixed `sg_`/`n_`; TOC anchors land on sections
-- [ ] Diagram `.diagram-fs-btn` fullscreen works; shell layout preserved (hero + toc-rail)
+- [ ] Shell layout and typography match current `html-report-guide.md`
+- [ ] No copied template sample research text (e.g. claude-code paths when researching a different repo)
 
 ## Parallel agents (when available)
 
 Spawn focused read-only tasks:
 
+- **Template sync task** (only if `template.html` present): "Sync rc929 HTML shell from template.html per template-sync-guide.md; delete template when done."
 - **Locator task**: "Find all files involved in [topic]; group by role; no implementation analysis."
 - **Analyzer task**: "Trace [flow] from entry X; document steps with file:line; no critique."
 
-Wait for all tasks before final synthesis. Main context synthesizes and builds HTML.
+Wait for template sync (if any) before research. Wait for all explore tasks before final synthesis. Main context synthesizes and builds HTML.
 
 ## Common failure modes (avoid)
 
 | Failure | Fix |
 |---------|-----|
-| Generic purple-gradient "AI slop" UI | Pick a context-specific aesthetic (see frontend-design) |
+| Main agent syncs template itself | Spawn subagent; preserve main context for research |
+| Template sample content leaks into report | Sync ignores content; build HTML from live research only |
+| Left template.html after sync | Subagent must delete it |
+| Stale guide after shell update | Sync updates both shell and guide together |
+| Generic purple-gradient "AI slop" UI | Follow synced shell; apply frontend-design within its system |
 | Diagram fiction | Build diagrams from analyzer notes only; delete unverified edges |
 | Markdown report instead of HTML | Deliverable must be `.html` |
 | Multiple files | Merge everything into one file |
 | Wall of text | Convert to diagram + collapsible evidence |
-| TOC jumps wrong section | Mermaid id collides with `section id` — use `sec-*` + `sg_*` prefixes |
-| Cramped 要点 | Use `summary-list` with bold lead terms from shell |
-| Tiny diagrams | Shell `.diagram-fs-btn` fullscreen + Ctrl+wheel zoom; split into overview + detail diagrams if needed |
-| Copied template research text | Ignore user `template.html` content — only reuse shell style/JS |
+| TOC jumps wrong section | Mermaid id collides with `section id` — use `sg_` / `n_` prefixes |
 
 ## Example user prompts (trigger this skill)
 
 - "探索这个仓库里数据是怎么从抓取到入库再到分析的"
 - "画一下 CLI 启动后一次请求是怎么走的"
 - "这些 agent 之间怎么协作？给我一份能点开看的说明"
+- "我在 rc929 目录放了新的 template.html，帮我按新模板风格研究 XXX"

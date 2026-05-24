@@ -2,22 +2,25 @@
 
 Build **one** self-contained research page. Accuracy > decoration.
 
-**Always start from** `references/html-shell-template.html` — copy the full `<head>` CSS, page chrome (scroll bar, ambient blobs, hero, toc-rail, footer), and bottom `<script>` block **intact**; only replace hero text and `<main>` content.
+**Always start from** `references/html-shell-template.html` — copy the full `<head>` CSS, page chrome, and bottom `<script>` block **intact**; only replace header metadata and `<main>` content.
 
-If the user provides a `template.html` at repo root, **do not edit it**. Treat it as a style reference only — ignore its research-specific content; the bundled shell already encodes its layout, palette, and JS behavior.
+If `template.html` was present in the skill root at invocation, it has already been consumed: a subagent synced this shell and guide from it, then deleted the file. Do not look for `template.html` during report build — use the updated files below.
 
 ## Architecture (keep lean)
 
 | Layer | File | Purpose |
 |-------|------|---------|
-| Workflow | `SKILL.md` | Research process, accuracy |
-| UI shell | `html-shell-template.html` | Layout, diagram fullscreen, toc-rail, mermaid |
+| Workflow | `SKILL.md` | Research process, accuracy, template sync trigger |
+| Template sync | `template-sync-guide.md` | How to update shell from new `template.html` |
+| UI shell | `html-shell-template.html` | Layout, CSS, JS — current generation |
 | UI rules | `html-report-guide.md` | This file — conventions |
 | Discovery | `codebase-locator.md`, `codebase-analyzer.md` | Code exploration |
 
 Do not fork new CSS/JS patterns per report — extend the shell once if a feature is missing for everyone.
 
-## Visual system (from user template)
+## Visual system (current shell)
+
+> **Note:** Values below reflect the **current** synced shell. After a template sync, these rows are rewritten to match the new template.
 
 | Element | Value |
 |---------|-------|
@@ -34,16 +37,18 @@ Do not fork new CSS/JS patterns per report — extend the shell once if a featur
 
 | Rule | Why |
 |------|-----|
-| **Hero `<h1>`** | One plain title line in `--moss`; do not split with `<em>` (no clay/orange accent) |
-| **Section ids: `<slug>`** (e.g. `summary`, `diagrams`) | Match shell + user template; keep slugs unique |
+| **Hero `<h1>`** | One plain title line; follow shell's color/weight conventions |
+| **Section ids: `<slug>`** (e.g. `summary`, `diagrams`) | Keep slugs unique |
 | **Mermaid ids: `sg_` / `n_` prefixes** | e.g. `subgraph sg_plugins["plugins/"]` — never equal a section id |
-| **TOC `href="#<slug>"` + text = `<h2>`** | Label match; IntersectionObserver highlights active link |
-| **Diagram fullscreen** | Keep shell `setupDiagramFullscreen()` — injects `.diagram-fs-btn` on each `.diagram-wrap` after mermaid render; Ctrl+wheel zoom in overlay; Esc closes |
-| **Do not remove shell JS** | `data-mermaid-source`, toc-rail positioning, scroll progress bar |
-| **Static `.ref`** | No copy chips or pointer gimmicks |
-| **要点 = `.summary-list`** | Ordered list with `<strong>` lead terms; not a dense prose wall |
+| **TOC `href="#<slug>"` + text = `<h2>`** | Label match; active-link highlighting per shell JS |
+| **Diagram interactions** | Preserve shell JS (e.g. `setupDiagramFullscreen()` if present) |
+| **Do not remove shell JS** | Mermaid init, TOC tracking, scroll progress — keep intact |
+| **Static `.ref`** | No copy chips or pointer gimmicks unless shell includes them |
+| **要点** | Use shell's list pattern (`.summary-list` or `<ul>` per current template) |
 
 ## Page structure
+
+Follow the section pattern in the current shell. Typical layout:
 
 ```html
 <section id="summary">
@@ -61,6 +66,8 @@ Do not fork new CSS/JS patterns per report — extend the shell once if a featur
 </section>
 ```
 
+If the synced shell uses plain `<h2>` and `<ul>` instead, follow **that** pattern — do not force `.section-head` if the shell doesn't have it.
+
 Optional sections (reuse shell classes): `.card-grid` + `.step-card`, `.table-wrap`, `.evidence-stack` + `<details>`, `#gaps` list.
 
 ## Mermaid
@@ -72,9 +79,9 @@ Optional sections (reuse shell classes): `.card-grid` + `.step-card`, `.table-wr
 ## Pre-delivery checklist
 
 1. Single `.html`; shell `<script>` block included unchanged
-2. Hero, meta pills, question panel filled with **this** research (not template sample text)
+2. Header, meta, question panel filled with **this** research (not template sample text)
 3. All section ids match TOC `href`s; each TOC label equals its `<h2>`
 4. Click each TOC link — lands on correct section (not diagram SVG)
-5. Hover diagram — `.diagram-fs-btn` appears; click opens fullscreen overlay; Ctrl+wheel zooms; Esc closes
-6. 要点 uses `.summary-list` with cited findings
+5. Diagram interactions work per shell (fullscreen, zoom, etc. if provided)
+6. 要点 uses shell's list format with cited findings
 7. Accuracy: diagrams traceable to code
