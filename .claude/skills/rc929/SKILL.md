@@ -21,7 +21,7 @@ Turn a research question into **one** accurate, visual, interactive HTML file. T
 | `references/codebase-locator.md` | Before/during discovery — finding WHERE files live |
 | `references/codebase-analyzer.md` | After locators — tracing HOW code works |
 | `references/html-report-guide.md` | Before writing HTML — structure, mermaid rules, UI patterns |
-| `references/html-shell-template.html` | **Copy this shell** — fonts, theme/mermaid JS, TOC conventions |
+| `references/html-shell-template.html` | **Copy this shell** — user-template style (Fraunces/Libre Baskerville), toc-rail, diagram-fs-btn fullscreen, mermaid JS |
 
 For visual polish, apply principles from the **frontend-design** skill (distinctive typography, cohesive palette, intentional motion)—but never sacrifice accuracy for aesthetics.
 
@@ -68,7 +68,7 @@ Act as **codebase-analyzer** (see `references/codebase-analyzer.md`): Read entry
 **Lead with diagrams**, then short supporting sections:
 
 - Executive visual: 1–2 hero diagrams answering the question
-- **要点**: one-sentence `summary-lead` plus `summary-cards` grid (3–6 cards) — avoid a dense bullet wall on first scroll
+- **要点**: `summary-list` ordered list (3–6 items, `<strong>` lead terms) — avoid a dense prose wall on first scroll
 - Evidence panels: collapsible `file:line` snippets (keep snippets short; link to path)
 - Optional: comparison table, timeline, or "key symbols" glossary
 
@@ -76,15 +76,15 @@ Cap prose: prefer cards, diagrams, tables, and `<details>` over long paragraphs.
 
 ### 5. Build the single HTML file
 
-Follow `references/html-report-guide.md` and **base the page on** `references/html-shell-template.html`. Requirements:
+Follow `references/html-report-guide.md` and **base the page on** `references/html-shell-template.html`. If the user attached `template.html`, read it only to confirm style — **never modify it**; the shell already encodes its layout/CSS/JS. Replace template sample content with this research's findings.
 
 - Filename: `research-<kebab-topic>-<YYYY-MM-DD>.html` (or user-specified path)
-- **Layout**: copy shell widths (`min(1440px, 98vw)`), sidebar + wide main; optional `sidebar-card` for reading hints
-- **Section ids**: `id="sec-<slug>"` only — Mermaid subgraph/node ids must use `sg_` / `n_` prefixes and never equal a section slug (prevents `#plugins` anchor jumping into SVG)
-- **Typography**: Source Sans 3 **17px** body, line-height ≥1.7; headings 700. Static `<code class="ref">` only
-- **TOC**: `href="#sec-…"` and link text **exactly** equals `<h2>`; use shell click handler + `scroll-margin-top`
-- **Diagrams**: shell lightbox zoom (click diagram, +/- / wheel / Esc) — required for complex charts
-- **Mermaid**: `data-mermaid-source` + theme re-render per shell script
+- **Layout**: copy shell intact — hero grid with plain `<h1>` (one line, no `<em>`), `--page-max: 1400px`, fixed `.toc-rail`, ambient blobs, scroll progress
+- **Section ids**: `id="<slug>"` (e.g. `summary`, `diagrams`) — Mermaid subgraph/node ids must use `sg_` / `n_` prefixes and never equal a section id
+- **Typography**: Libre Baskerville **16px** body; Fraunces display headings; IBM Plex Mono for `.ref`. Static `<code class="ref">` only
+- **TOC**: numbered links in `nav.toc-rail ol`; `href="#<slug>"` and link text **exactly** equals `<h2>`
+- **Diagrams**: preserve shell `setupDiagramFullscreen()` — `.diagram-fs-btn` on hover, fullscreen overlay, Ctrl+wheel zoom, Esc close
+- **Mermaid**: `data-mermaid-source` preserved; call `setupDiagramFullscreen()` after render
 
 **Do not** split into multiple HTML pages or export PDF unless asked.
 
@@ -106,9 +106,9 @@ Tell the user:
 - [ ] Metadata block (date, commit, repo) present
 - [ ] Open in browser mentally: mermaid syntax valid; theme toggle re-renders diagrams
 - [ ] TOC labels match every `<h2>` exactly; no click-only ref widgets
-- [ ] Body font readable (Source Sans 3 17px); 要点 uses summary-cards
-- [ ] Section ids prefixed `sec-`; Mermaid ids prefixed `sg_`/`n_`; TOC anchors land on sections
-- [ ] Diagram lightbox works; layout uses wide shell (not narrow 1100px column)
+- [ ] Body font readable (Libre Baskerville 16px); 要点 uses summary-list
+- [ ] Section ids unique; Mermaid ids prefixed `sg_`/`n_`; TOC anchors land on sections
+- [ ] Diagram `.diagram-fs-btn` fullscreen works; shell layout preserved (hero + toc-rail)
 
 ## Parallel agents (when available)
 
@@ -129,8 +129,9 @@ Wait for all tasks before final synthesis. Main context synthesizes and builds H
 | Multiple files | Merge everything into one file |
 | Wall of text | Convert to diagram + collapsible evidence |
 | TOC jumps wrong section | Mermaid id collides with `section id` — use `sec-*` + `sg_*` prefixes |
-| Cramped 要点 | Use `summary-lead` + `summary-cards` from shell |
-| Tiny diagrams | Shell diagram modal zoom; split into overview + detail diagrams if needed |
+| Cramped 要点 | Use `summary-list` with bold lead terms from shell |
+| Tiny diagrams | Shell `.diagram-fs-btn` fullscreen + Ctrl+wheel zoom; split into overview + detail diagrams if needed |
+| Copied template research text | Ignore user `template.html` content — only reuse shell style/JS |
 
 ## Example user prompts (trigger this skill)
 
