@@ -45,6 +45,34 @@ Do not fork new CSS/JS patterns per report — extend the shell once if a featur
 | **Do not remove shell JS** | Mermaid init, TOC tracking, scroll progress — keep intact |
 | **Static `.ref`** | No copy chips or pointer gimmicks unless shell includes them |
 | **要点** | Use shell's list pattern (`.summary-list` or `<ul>` per current template) |
+| **Explanatory prose required** | Every section must have a `.section-prose` block (2+ sentences) explaining the topic in plain language — diagrams alone are insufficient |
+
+## Prose guidelines
+
+Reports must balance visual elements with substantive text. Diagrams show **structure**; prose explains **behavior, rationale, and context**.
+
+### Minimum text requirements
+
+- Each `<section>` must contain at least one `<div class="section-prose">` with 2+ sentences of explanatory text
+- After every diagram, write a paragraph explaining what the diagram shows, key relationships, and non-obvious details
+- 要点 items should be full sentences with enough context for a reader unfamiliar with the codebase
+- Step cards and table cells should contain complete explanations, not just labels
+
+### `.section-prose` usage
+
+```html
+<div class="section-prose">
+  <p>Explanatory paragraph here. Describe what this section covers,
+  why the architecture works this way, and what constraints shaped the design.</p>
+  <p>Additional context paragraph if needed — relationships between components,
+  edge cases, or historical decisions worth noting.</p>
+</div>
+```
+
+Place `.section-prose` blocks:
+- After the `<h2>` section header (before diagrams) to introduce the topic
+- After diagrams to explain what the reader is looking at
+- Before evidence/code snippets to contextualize them
 
 ## Page structure
 
@@ -53,15 +81,24 @@ Follow the section pattern in the current shell. Typical layout:
 ```html
 <section id="summary">
   <div class="section-head"><span class="section-num">01</span><h2>要点</h2></div>
+  <div class="section-prose">
+    <p>概述本次研究的背景和核心发现，帮助读者快速理解整体结论。</p>
+  </div>
   <ol class="summary-list">
     <li><strong>主题</strong>：… <code class="ref">path:line</code></li>
   </ol>
 </section>
 <section id="diagrams">
   <div class="section-head"><span class="section-num">02</span><h2>架构概览</h2></div>
+  <div class="section-prose">
+    <p>介绍段落：说明本架构的设计思路和主要组件之间的关系。</p>
+  </div>
   <div class="diagram-wrap">
     <pre class="mermaid">… subgraph sg_…</pre>
     <p class="diagram-caption">Sources: …</p>
+  </div>
+  <div class="section-prose">
+    <p>图后解释：描述图中的关键路径、各节点职责，以及图中未体现的约束和设计决策。</p>
   </div>
 </section>
 ```
