@@ -14,7 +14,7 @@
 最终你会得到 **一个** 文件：
 
 ```
-research-<topic>-2026-05-24.html   用浏览器打开 —— 目录导航、Mermaid 图、可折叠证据块
+2026-05-24-research-<topic>.html   用浏览器打开 —— 目录导航、Mermaid 图、可折叠证据块
 ```
 
 ---
@@ -70,10 +70,10 @@ your-project/
 auth 中间件链在 HTTP 请求进来时是怎么工作的？
 ```
 
-也可以指定输出路径或主题名：
+也可以指定输出路径（默认：`thoughts/research/`）：
 
 ```
-研究 agent 工具调用链路，保存为 research-agents-2026-05-24.html
+研究 agent 工具调用链路，保存为 2026-05-24-research-agents.html
 ```
 
 ### 2. 斜杠命令
@@ -157,7 +157,7 @@ auth 中间件链在 HTTP 请求进来时是怎么工作的？
 | `rc929-workspace/` | 技能开发迭代与 eval 产物 |
 | `codebase-locator.md`、`codebase-analyzer.md` | 探索参考文档的独立副本 |
 
-研究产出的 HTML 写到你指定的位置（或话题相关目录）—— **不会** 打包进技能文件夹。
+研究产出的 HTML 默认写到项目根目录的 `thoughts/research/`，也可指定其他路径。产出文件 **不会** 打包进技能文件夹。
 
 ---
 
