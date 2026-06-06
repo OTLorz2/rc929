@@ -102,7 +102,8 @@ Cap prose: prefer cards, diagrams, tables, and `<details>` over long paragraphs.
 
 Follow `references/html-report-guide.md` and **base the page on** `references/html-shell-template.html`. Replace all placeholder/sample content with **this research's** findings only.
 
-- Filename: `research-<kebab-topic>-<YYYY-MM-DD>.html` (or user-specified path)
+- Filename: `<YYYY-MM-DD>-research-<kebab-topic>.html`
+- Default path: `thoughts/research/` (create if needed; overridden by user-specified path)
 - **Layout**: copy shell CSS/JS/layout intact; fill header + `<main>` with research content
 - **Section ids**: per guide (typically `id="<slug>"`) — Mermaid subgraph/node ids must use `sg_` / `n_` prefixes and never equal a section id
 - **TOC**: per guide — link text **exactly** equals `<h2>`

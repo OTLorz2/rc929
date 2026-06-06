@@ -20,7 +20,7 @@ Ask your AI assistant to explore how code works — data flows, architecture, re
 You get **one** file:
 
 ```
-research-<topic>-2026-05-24.html   open in any browser — TOC, Mermaid diagrams, collapsible evidence
+2026-05-24-research-<topic>.html   open in any browser — TOC, Mermaid diagrams, collapsible evidence
 ```
 
 ---
@@ -76,10 +76,10 @@ Map the module boundaries between the API layer and the worker queue.
 How does the auth middleware chain work on an incoming HTTP request?
 ```
 
-You can also specify where to save the report:
+You can also specify where to save the report (default: `thoughts/research/`):
 
 ```
-Research the agent tool wiring and save the report as research-agents-2026-05-24.html
+Research the agent tool wiring and save the report as 2026-05-24-research-agents.html
 ```
 
 ### 2. Slash command
@@ -163,7 +163,7 @@ Sample HTML templates for inspiration live in [`templates/`](templates/) at the 
 | `rc929-workspace/` | Skill development iterations and eval artifacts |
 | `codebase-locator.md`, `codebase-analyzer.md` | Standalone copies of exploration reference docs |
 
-Research output HTML files are written wherever you specify (or next to the topic under investigation) — they are **not** bundled inside the skill folder.
+Research output HTML files default to `thoughts/research/` in the project root. You can override this by specifying a path. They are **not** bundled inside the skill folder.
 
 ---
 
