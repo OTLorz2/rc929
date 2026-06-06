@@ -5,7 +5,7 @@ description: Deep, accurate codebase exploration for user research questions, de
 
 # rc929 — Codebase Research → Single HTML Report
 
-Turn a research question into **one** accurate, visual, interactive HTML file. The user reads by **looking** (diagrams, cards, tabs) more than scrolling walls of text.
+Turn a research question into **one** accurate, well-explained, interactive HTML file. Diagrams provide structural overview; **prose provides understanding**. Every diagram and code reference must be accompanied by clear textual explanation of what it means and why it matters.
 
 ## Non-negotiables
 
@@ -87,16 +87,16 @@ Act as **codebase-analyzer** (see `references/codebase-analyzer.md`): Read entry
 - Re-read critical paths you diagrammed; remove nodes/edges you cannot cite.
 - Prefer primary source (source code) over README/architecture PNGs; if docs disagree with code, show **code truth** and note the doc mismatch briefly.
 
-### 4. Synthesize for visual HTML
+### 4. Synthesize for explained HTML
 
-**Lead with diagrams**, then short supporting sections:
+**Pair every diagram with substantive prose.** A diagram shows structure; text explains behavior, rationale, and context that diagrams cannot convey.
 
-- Executive visual: 1–2 hero diagrams answering the question
-- **要点**: summary list (format per `html-report-guide.md` — ordered or unordered per current shell)
-- Evidence panels: collapsible `file:line` snippets (keep snippets short; link to path)
-- Optional: comparison table, timeline, or "key symbols" glossary
+- **要点**: summary list with enough detail that a reader unfamiliar with the codebase can follow (format per `html-report-guide.md`)
+- Executive visual: 1–2 hero diagrams answering the question, each followed by 2–4 paragraphs explaining the flow in plain language
+- Detail sections: for each topic area, write **explanatory paragraphs first** (what happens, why it's designed this way, what constraints apply), then support with diagrams/tables/code if helpful
+- Evidence panels: collapsible `file:line` snippets for readers who want to verify
 
-Cap prose: prefer cards, diagrams, tables, and `<details>` over long paragraphs.
+Minimum text per section: each `<section>` must contain at least one `.section-prose` block (2+ sentences of explanatory context) beyond diagrams and bullet points. If a section is only a diagram with a caption, add explanation.
 
 ### 5. Build the single HTML file
 
@@ -127,6 +127,8 @@ Tell the user:
 - [ ] Research question stated in header
 - [ ] At least one mermaid diagram if the topic involves flow/structure/interaction
 - [ ] Every diagram node/edge traceable to code (or labeled hypothetical)
+- [ ] **Every section has a `.section-prose` block with 2+ sentences of explanatory text**
+- [ ] **Every diagram is followed by a prose paragraph explaining what it shows**
 - [ ] No improvement recommendations unless requested
 - [ ] Metadata block (date, commit, repo) present
 - [ ] Open in browser mentally: mermaid syntax valid; theme toggle re-renders diagrams (if shell has theme toggle)
@@ -157,7 +159,8 @@ Wait for template sync (if any) before research. Wait for all explore tasks befo
 | Diagram fiction | Build diagrams from analyzer notes only; delete unverified edges |
 | Markdown report instead of HTML | Deliverable must be `.html` |
 | Multiple files | Merge everything into one file |
-| Wall of text | Convert to diagram + collapsible evidence |
+| Diagram without explanation | Add 2–4 sentences of prose explaining what the diagram shows and why |
+| Section with only bullets/cards | Add a `.section-prose` paragraph giving context and rationale |
 | TOC jumps wrong section | Mermaid id collides with `section id` — use `sg_` / `n_` prefixes |
 
 ## Example user prompts (trigger this skill)

@@ -285,6 +285,19 @@
     #summary .summary-list li:last-child { margin-bottom: 0; }
     #summary .summary-list li strong { font-weight: 700; }
 
+    /* Section prose */
+    .section-prose {
+      margin-bottom: 1.75rem;
+      max-width: 68ch;
+    }
+    .section-prose p {
+      margin: 0 0 .85rem;
+      font-size: .95rem;
+      line-height: 1.78;
+      color: var(--text);
+    }
+    .section-prose p:last-child { margin-bottom: 0; }
+
     /* Diagrams */
     .diagram-wrap {
       position: relative;
@@ -652,6 +665,9 @@
 
         <section id="diagrams">
           <div class="section-head"><span class="section-num">02</span><h2>架构概览</h2></div>
+          <div class="section-prose">
+            <p>{{介绍段落：描述本节涵盖的架构范围、主要组成部分，以及它们之间的协作关系。帮助读者在看图之前建立整体认知。}}</p>
+          </div>
           <div class="diagram-wrap">
             <pre class="mermaid">
 flowchart TB
@@ -660,6 +676,9 @@ flowchart TB
   end
             </pre>
             <p class="diagram-caption">Sources: …</p>
+          </div>
+          <div class="section-prose">
+            <p>{{图后解释：用文字说明图中的关键路径、各节点的职责、数据如何流转，以及图中未能体现的约束条件或设计决策。}}</p>
           </div>
         </section>
 
