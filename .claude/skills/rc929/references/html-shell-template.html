@@ -9,6 +9,9 @@
 
   TOC: href="#<slug>" and link text MUST equal that section's <h2> exactly.
   Diagrams: wrap in .diagram-wrap > pre.mermaid; setupDiagramFullscreen() adds .diagram-fs-btn after render.
+  Layout: follow html-report-guide.md § Diagram layout (split dense graphs; ≤10 nodes per flowchart).
+
+  Mermaid: loaded via ES module (mermaid@11 + @mermaid-js/layout-elk). Bottom <script type="module"> must stay intact.
 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -19,7 +22,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     :root {
       --bg: #e4d9c8;
@@ -670,12 +672,18 @@
           </div>
           <div class="diagram-wrap">
             <pre class="mermaid">
-flowchart TB
+flowchart LR
   subgraph sg_entry["入口层"]
-    A["main"]
+    n_main["main()"]
   end
+  subgraph sg_core["核心层"]
+    n_router["router"]
+    n_handler["handler"]
+  end
+  n_main --> n_router
+  n_router --> n_handler
             </pre>
-            <p class="diagram-caption">Sources: …</p>
+            <p class="diagram-caption">Sources: … — 示例：两层子图、短边、无跨层长连线。复杂架构请拆成多张图，见 html-report-guide.md § Diagram layout。</p>
           </div>
           <div class="section-prose">
             <p>{{图后解释：用文字说明图中的关键路径、各节点的职责、数据如何流转，以及图中未能体现的约束条件或设计决策。}}</p>
@@ -689,14 +697,32 @@ flowchart TB
     <footer>{{FOOTER}}</footer>
   </div>
 
-  <script>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11.6.0/dist/mermaid.esm.min.mjs';
+    import elkLayouts from 'https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.9/dist/mermaid-layout-elk.esm.min.mjs';
+
+    mermaid.registerLayoutLoaders(elkLayouts);
+
     (function () {
       document.querySelectorAll('pre.mermaid').forEach(function (el) {
         el.dataset.mermaidSource = el.textContent.trim();
       });
 
       (async function renderMermaid() {
-        mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', theme: 'neutral' });
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: 'loose',
+          theme: 'neutral',
+          layout: 'dagre',
+          flowchart: {
+            useMaxWidth: true,
+            htmlLabels: true,
+            curve: 'basis',
+            padding: 20,
+            nodeSpacing: 60,
+            rankSpacing: 80
+          }
+        });
         var nodes = document.querySelectorAll('pre.mermaid');
         nodes.forEach(function (el) {
           var src = el.dataset.mermaidSource || el.textContent.trim();

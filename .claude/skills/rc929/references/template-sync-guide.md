@@ -63,7 +63,9 @@ Produce a **generic, copy-ready shell**:
    - ID rule: section `id="<slug>"`; Mermaid subgraph/node ids use `sg_` / `n_` prefixes
    - TOC rule: `href="#<slug>"` text must equal section `<h2>`
 4. Preserve **rc929 essentials** if the template lacks them:
-   - Mermaid via CDN + `pre.mermaid` inside `.diagram-wrap`
+   - Mermaid via ES module (`mermaid@11` + `@mermaid-js/layout-elk`) in bottom `<script type="module">` — **not** a classic `<script src="mermaid.min.js">` in `<head>`
+   - `mermaid.registerLayoutLoaders(elkLayouts)` + Dagre-tuned `mermaid.initialize()` (see current shell)
+   - `pre.mermaid` inside `.diagram-wrap`
    - `.diagram-caption` under each diagram
    - If template has no diagram fullscreen: **add** `setupDiagramFullscreen()` from the previous shell (inject `.diagram-fs-btn`, overlay, Ctrl+wheel zoom, Esc close) — this is a rc929 UX requirement unless the template explicitly implements an equivalent
 
@@ -139,3 +141,4 @@ Main agent: after subagent returns, **do not re-read template.html** (it's gone)
 | Main agent does sync itself | Offload to subagent; main agent starts research immediately after |
 | Kept old guide fonts while shell changed | Guide and shell must describe the same system |
 | Removed mermaid/TOC JS | Keep all functional JS from template; add missing rc929 essentials |
+| Replaced ES module Mermaid with classic script tag | Shell must use `<script type="module">` + elk registration + Dagre init config |
