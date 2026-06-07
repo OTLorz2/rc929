@@ -14,7 +14,7 @@
 
   TOC: href="#<slug>" and link text MUST equal that section's <h2> exactly.
   Diagrams: wrap in .diagram-wrap > pre.mermaid; setupDiagramFullscreen() adds .diagram-fs-btn after render.
-  Layout: follow html-report-guide.md § Diagram layout (split dense graphs; ≤10 nodes per flowchart).
+  Layout: follow diagram-layout-guide.md (split dense graphs; ≤10 nodes per flowchart).
 
   Mermaid: loaded via ES module (mermaid@11 + @mermaid-js/layout-elk). Bottom <script type="module"> must stay intact.
 -->
@@ -27,7 +27,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/base16/default-light.min.css">
   <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
   <style>
@@ -457,6 +456,10 @@
     }
     .mermaid { text-align: center; }
     .mermaid svg { max-width: 100%; height: auto; }
+    .mermaid svg .flowchart-link,
+    .mermaid svg .edgePath path {
+      shape-rendering: crispEdges;
+    }
 
     /* Timeline steps */
     .card-grid {
@@ -688,8 +691,8 @@
   </div>
 
   <script type="module">
-    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11.6.0/dist/mermaid.esm.min.mjs';
-    import elkLayouts from 'https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.9/dist/mermaid-layout-elk.esm.min.mjs';
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11.15.0/dist/mermaid.esm.min.mjs';
+    import elkLayouts from 'https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.2.1/dist/mermaid-layout-elk.esm.min.mjs';
 
     mermaid.registerLayoutLoaders(elkLayouts);
 
@@ -707,10 +710,15 @@
           flowchart: {
             useMaxWidth: true,
             htmlLabels: true,
-            curve: 'basis',
+            curve: 'rounded',
             padding: 20,
-            nodeSpacing: 60,
-            rankSpacing: 80
+            nodeSpacing: 72,
+            rankSpacing: 100
+          },
+          elk: {
+            mergeEdges: true,
+            nodePlacementStrategy: 'LINEAR_SEGMENTS',
+            considerModelOrder: 'NODES_AND_EDGES'
           }
         });
         var nodes = document.querySelectorAll('pre.mermaid');
@@ -722,9 +730,22 @@
         });
         if (typeof mermaid.run === 'function') await mermaid.run({ nodes: nodes });
         else await mermaid.init(undefined, nodes);
+        nodes.forEach(function (el) {
+          var svg = el.querySelector('svg');
+          if (svg) polishMermaidSvg(svg);
+        });
         setupDiagramFullscreen();
         highlightSnippets();
       })();
+
+      function polishMermaidSvg(svg) {
+        svg.querySelectorAll('g.edgePaths, g.edgeLabels').forEach(function (g) {
+          svg.appendChild(g);
+        });
+        svg.querySelectorAll('.flowchart-link, .edgePath path').forEach(function (p) {
+          p.setAttribute('shape-rendering', 'crispEdges');
+        });
+      }
 
       function highlightSnippets() {
         if (typeof hljs === 'undefined') return;

@@ -173,7 +173,7 @@ Wait for template sync (if any) before research. Wait for all explore tasks befo
 | Diagram without explanation | Add 2–4 sentences of prose explaining what the diagram shows and why |
 | Section with only bullets/cards | Add prose paragraphs giving context and rationale |
 | TOC jumps wrong section | Mermaid id collides with `section id` — use `sg_` / `n_` prefixes |
-| Messy mermaid lines | Follow `references/diagram-layout-guide.md` — split by concern, use `sequenceDiagram` for RPC, ELK as last resort |
+| Messy mermaid lines | Follow `diagram-layout-guide.md` — split dense graphs; shell uses `rounded` curves + edge-layer polish; converter auto-ELK + stderr warnings; `sequenceDiagram` for RPC |
 
 ## Example user prompts (trigger this skill)
 

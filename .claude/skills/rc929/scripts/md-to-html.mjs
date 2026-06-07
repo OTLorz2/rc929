@@ -220,6 +220,49 @@ function proseCharCount(blocks, beforeIndex) {
   return n;
 }
 
+const ELK_FRONTMATTER = `---
+config:
+  layout: elk
+---
+`;
+
+function analyzeMermaidDiagram(source) {
+  let nodes = 0;
+  let edges = 0;
+  let subgraphs = 0;
+  const fanOut = {};
+  const hasLayoutOverride =
+    /^\s*---[\s\S]*?\blayout\s*:/m.test(source) || /%%\{\s*init:/.test(source);
+
+  for (const line of source.split('\n')) {
+    const trimmed = line.trim();
+    if (/subgraph\s+/.test(trimmed)) subgraphs++;
+
+    for (const _ of trimmed.matchAll(/\b(n_\w+|\w+)\s*\[/g)) nodes++;
+
+    for (const sep of ['-->', '-.->', '==>', '<-->']) {
+      edges += trimmed.split(sep).length - 1;
+    }
+
+    for (const m of trimmed.matchAll(/(\w+)\s*(?:-->|-.->|==>)\s*(\w+)/g)) {
+      fanOut[m[1]] = (fanOut[m[1]] || 0) + 1;
+    }
+    for (const m of trimmed.matchAll(/(\w+)\s*<-->\s*(\w+)/g)) {
+      fanOut[m[1]] = (fanOut[m[1]] || 0) + 1;
+      fanOut[m[2]] = (fanOut[m[2]] || 0) + 1;
+    }
+  }
+
+  const maxFanOut = Math.max(0, ...Object.values(fanOut));
+  const qualifiesForAutoElk =
+    !hasLayoutOverride &&
+    (nodes > 10 || edges > 12 || subgraphs >= 3 || maxFanOut >= 4);
+  const shouldWarn =
+    nodes > 8 || edges > 10 || subgraphs >= 3 || maxFanOut >= 4;
+
+  return { nodes, edges, subgraphs, maxFanOut, hasLayoutOverride, qualifiesForAutoElk, shouldWarn };
+}
+
 function proseAfterMermaid(blocks, mermaidIndex) {
   let n = 0;
   for (let i = mermaidIndex + 1; i < blocks.length; i++) {
@@ -269,6 +312,13 @@ function validate(frontmatter, sections) {
           }
         }
       }
+
+      const analysis = analyzeMermaidDiagram(b.source);
+      if (analysis.shouldWarn) {
+        warnings.push(
+          `Section "${s.title}": diagram has ${analysis.nodes} nodes / ${analysis.edges} edges / ${analysis.subgraphs} subgraphs — consider splitting per diagram-layout-guide.md`
+        );
+      }
     }
   }
 
@@ -295,7 +345,11 @@ function renderList(block, slug) {
 }
 
 function renderMermaid(block) {
-  const src = escapeHtml(block.source);
+  let source = block.source;
+  if (analyzeMermaidDiagram(source).qualifiesForAutoElk) {
+    source = ELK_FRONTMATTER + source;
+  }
+  const src = escapeHtml(source);
   let html = `          <div class="diagram-wrap">\n            <pre class="mermaid">\n${src}\n            </pre>`;
   if (block.caption) {
     html += `\n            <p class="diagram-caption">${inlineFormat(block.caption)}</p>`;
@@ -370,7 +424,10 @@ function renderMetaPills(fm) {
 }
 
 function inject(shell, fm, toc, main, footer) {
+  // Drop the template's leading documentation comment (which lists every placeholder)
+  // so content is injected only into the real placeholders, not into the comment.
   return shell
+    .replace(/^\s*<!--[\s\S]*?-->\s*/, '')
     .replace(/\{\{TITLE\}\}/g, escapeHtml(fm.title || ''))
     .replace(/\{\{HERO_EYEBROW\}\}/g, escapeHtml(fm.eyebrow || 'rc929 Research'))
     .replace(/\{\{HERO_TITLE\}\}/g, escapeHtml(fm.title || ''))
