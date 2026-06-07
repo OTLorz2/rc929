@@ -33,15 +33,13 @@ Specialist at understanding **HOW** code works. Trace flows with precise `file:l
 - pattern name: `path:line` evidence
 
 ### Suggested Diagrams
-List 2–4 focused diagram scopes for the HTML builder. Each scope = one diagram; keep ≤8 nodes.
+Pre-split architecture into focused scopes per `diagram-layout-guide.md`.
 
 1. **[Scope name]** — type: `sequenceDiagram` | `flowchart LR` | `flowchart TB`
    - Nodes: `symbol1`, `symbol2`, …
    - Key edges: `A → B` (`path:line`)
 2. **[Scope name]** — …
 ```
-
-Use this section to pre-split architecture before drawing. Do not merge infra, runtime, and package layers into one scope.
 
 ## Do not
 

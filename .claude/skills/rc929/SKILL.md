@@ -22,6 +22,7 @@ Turn a research question into **one** accurate, well-explained, interactive HTML
 | `references/codebase-locator.md` | Before/during discovery — finding WHERE files live |
 | `references/codebase-analyzer.md` | After locators — tracing HOW code works |
 | `references/html-report-guide.md` | Before writing HTML — structure, mermaid rules, UI patterns |
+| `references/diagram-layout-guide.md` | Before drawing diagrams — complexity limits, splitting, ELK |
 | `references/html-shell-template.html` | **Copy this shell** — layout, CSS, JS for the current template generation |
 
 For visual polish, apply principles from the **frontend-design** skill (distinctive typography, cohesive palette, intentional motion)—but never sacrifice accuracy for aesthetics.
@@ -63,15 +64,7 @@ Gather metadata for the report footer/header:
 
 Decompose the question into 2–6 investigable areas (e.g., entry points, storage, external APIs, error paths). Use a todo list for multi-area research.
 
-Choose diagram types **up front** (only where evidence supports them). For layout rules (node/edge limits, when to split), read `references/html-report-guide.md` § Diagram layout.
-
-| Question shape | Prefer | When to split |
-|----------------|--------|---------------|
-| Pipelines, ETL, batch jobs | `flowchart LR` / `graph` | Stages >8 nodes → one diagram per stage |
-| Module/package dependencies | `graph` (classes/components as nodes) | Package tree vs import graph → separate diagrams |
-| Multi-party RPC, webhooks, agents | `sequenceDiagram` | Never cram RPC into a flowchart |
-| State machines, modes | `stateDiagram-v2` | — |
-| Layered architecture | `flowchart` with subgraphs | **One layer per diagram** (infra / services / packages) |
+Choose diagram types **up front** (only where evidence supports them). For type selection, complexity limits, and splitting rules, read `references/diagram-layout-guide.md`.
 
 ### 3. Explore (locator → analyzer)
 
@@ -92,7 +85,7 @@ Act as **codebase-analyzer** (see `references/codebase-analyzer.md`): Read entry
 **Pair every diagram with substantive prose.** A diagram shows structure; text explains behavior, rationale, and context that diagrams cannot convey.
 
 - **要点**: summary list with enough detail that a reader unfamiliar with the codebase can follow (format per `html-report-guide.md`)
-- Executive visual: 2–4 **focused** diagrams answering the question (split by concern per `html-report-guide.md` § Diagram layout), each followed by 2–4 paragraphs explaining the flow in plain language
+- Executive visual: 2–4 **focused** diagrams answering the question (split by concern per `references/diagram-layout-guide.md`), each followed by 2–4 paragraphs explaining the flow in plain language
 - Detail sections: for each topic area, write **explanatory paragraphs first** (what happens, why it's designed this way, what constraints apply), then support with diagrams/tables/code if helpful
 - Evidence panels: collapsible `file:line` snippets for readers who want to verify
 
@@ -134,8 +127,7 @@ Tell the user:
 - [ ] Open in browser mentally: mermaid syntax valid; theme toggle re-renders diagrams (if shell has theme toggle)
 - [ ] TOC labels match every `<h2>` exactly
 - [ ] Section ids unique; Mermaid ids prefixed `sg_`/`n_`; TOC anchors land on sections
-- [ ] No flowchart exceeds 10 nodes or 12 edges; multi-layer arch split into ≥2 diagrams
-- [ ] Request/RPC flows use `sequenceDiagram`; edge labels readable without overlap
+- [ ] Diagram layout rules followed (see `references/diagram-layout-guide.md` § Checklist)
 - [ ] Shell layout and typography match current `html-report-guide.md`
 - [ ] No copied template sample research text (e.g. claude-code paths when researching a different repo)
 
@@ -164,7 +156,7 @@ Wait for template sync (if any) before research. Wait for all explore tasks befo
 | Diagram without explanation | Add 2–4 sentences of prose explaining what the diagram shows and why |
 | Section with only bullets/cards | Add a `.section-prose` paragraph giving context and rationale |
 | TOC jumps wrong section | Mermaid id collides with `section id` — use `sg_` / `n_` prefixes |
-| Messy mermaid lines | Split into 2–4 diagrams by concern; use `sequenceDiagram` for RPC; follow `html-report-guide.md` § Diagram layout; ELK frontmatter only as last resort |
+| Messy mermaid lines | Follow `references/diagram-layout-guide.md` — split by concern, use `sequenceDiagram` for RPC, ELK as last resort |
 
 ## Example user prompts (trigger this skill)
 
