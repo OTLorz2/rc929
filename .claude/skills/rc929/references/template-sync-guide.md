@@ -46,7 +46,7 @@ Strip all research-specific material. Do **not** let sample content influence th
 - Footer attribution text
 - Any `path:line` citations in the sample
 
-When building the new shell, replace content areas with placeholders: `{{TITLE}}`, `{{REPO}}`, `{{DATE}}`, `{{QUESTION}}`, `{{MAIN_CONTENT}}`.
+When building the new shell, replace content areas with placeholders: `{{TITLE}}`, `{{HERO_EYEBROW}}`, `{{HERO_TITLE}}`, `{{META_PILLS}}`, `{{QUESTION}}`, `{{TOC_ITEMS}}`, `{{MAIN_CONTENT}}`, `{{FOOTER}}`.
 
 ---
 
@@ -69,7 +69,7 @@ Produce a **generic, copy-ready shell**:
    - `pre.snippet` token color overrides in CSS (scoped to shell palette vars)
    - If template has no diagram fullscreen: **add** `setupDiagramFullscreen()` from the previous shell (inject `.diagram-fs-btn`, overlay, Ctrl+wheel zoom, Esc close) — this is a rc929 UX requirement unless the template explicitly implements an equivalent
 
-Replace sample `<main>` sections with one commented example block showing correct markup for 要点 + one diagram section.
+Replace all `<main>` content with a single `{{MAIN_CONTENT}}` placeholder (converter generates sections from markdown). Replace fixed TOC `<li>` entries with `{{TOC_ITEMS}}`.
 
 ### 2. `references/html-report-guide.md`
 
@@ -84,9 +84,13 @@ Rewrite the **Visual system** and **Hard UI rules** sections to match the new sh
 
 Update the architecture table row for `html-shell-template.html` if its role changed (e.g. "sticky sidebar toc" vs "toc-rail").
 
+### 3. `references/markdown-report-guide.md`
+
+If shell placeholder tokens or section CSS class names change, review the mapping table in `markdown-report-guide.md` and update if needed. Ensure `scripts/md-to-html.mjs` placeholder replacements still match the new shell.
+
 Do **not** change research workflow sections in `SKILL.md` — only HTML-related references.
 
-### 3. Delete `template.html`
+### 4. Delete `template.html`
 
 After both files are written and saved, delete `template.html` from the skill root. Confirm it no longer exists.
 
@@ -128,8 +132,10 @@ Subagent checklist:
 - [ ] `html-report-guide.md` visual table matches shell (no stale Fraunces/toc-rail unless template has them)
 - [ ] `template.html` deleted from skill root
 - [ ] Diagram fullscreen or template-equivalent interaction documented
+- [ ] Placeholder tokens (`{{MAIN_CONTENT}}`, `{{TOC_ITEMS}}`, etc.) unchanged or `md-to-html.mjs` updated to match
+- [ ] `markdown-report-guide.md` mapping table reviewed if class names changed
 
-Main agent: after subagent returns, **do not re-read template.html** (it's gone). Read updated `html-report-guide.md` + `html-shell-template.html` when building the report.
+Main agent: after subagent returns, **do not re-read template.html** (it's gone). Read `markdown-report-guide.md` when writing the report; the converter reads the updated shell.
 
 ---
 

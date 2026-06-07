@@ -2,7 +2,7 @@
 
 Build **one** self-contained research page. Accuracy > decoration.
 
-**Always start from** `references/html-shell-template.html` — copy the full `<head>` CSS, page chrome, and bottom `<script>` block **intact**; only replace header metadata and `<main>` content.
+**Agents** write Markdown per `references/markdown-report-guide.md`, then run `scripts/md-to-html.mjs` — do **not** copy `html-shell-template.html` into context. The converter injects content into the shell's `<head>` CSS, page chrome, and bottom `<script>` block **intact**.
 
 If `template.html` was present in the skill root at invocation, it has already been consumed: a subagent synced this shell and guide from it, then deleted the file. Do not look for `template.html` during report build — use the updated files below.
 
@@ -11,9 +11,11 @@ If `template.html` was present in the skill root at invocation, it has already b
 | Layer | File | Purpose |
 |-------|------|---------|
 | Workflow | `SKILL.md` | Research process, accuracy, template sync trigger |
+| Content schema | `markdown-report-guide.md` | Agent writes `.md` per this contract |
+| Converter | `scripts/md-to-html.mjs` | md → html injection into shell |
 | Template sync | `template-sync-guide.md` | How to update shell from new `template.html` |
-| UI shell | `html-shell-template.html` | Layout, CSS, JS — current generation |
-| UI rules | `html-report-guide.md` | This file — conventions |
+| UI shell | `html-shell-template.html` | Layout, CSS, JS — filled by converter |
+| UI rules | `html-report-guide.md` | This file — HTML output conventions |
 | Discovery | `codebase-locator.md`, `codebase-analyzer.md` | Code exploration |
 
 Do not fork new CSS/JS patterns per report — extend the shell once if a feature is missing for everyone.

@@ -32,7 +32,7 @@ rc929 is a **research workflow skill**, not a CLI tool. The agent reads the live
 | Principle | Meaning |
 |-----------|---------|
 | **Accuracy first** | Every claim needs evidence (`path:line` or quoted symbol). Uncertain items are marked **needs verification** and never drawn as fact in diagrams. |
-| **One deliverable** | Exactly one self-contained `.html` (inline CSS/JS; CDN only for fonts/Mermaid if needed). |
+| **One deliverable** | Exactly one self-contained `.html` (inline CSS/JS; CDN only for fonts/Mermaid if needed). Agent writes `.md` first, then converts via bundled script. |
 | **Document what IS** | No refactors, critiques, or "should" unless you explicitly asked. |
 | **Fresh research** | Reads source code directly — stale docs alone are not enough. |
 
@@ -50,7 +50,10 @@ your-project/
     └── skills/
         └── rc929/
             ├── SKILL.md
+            ├── scripts/
+            │   └── md-to-html.mjs
             └── references/
+                ├── markdown-report-guide.md
                 ├── html-shell-template.html
                 ├── html-report-guide.md
                 ├── codebase-locator.md
@@ -59,6 +62,8 @@ your-project/
 ```
 
 Open your AI assistant in the project — ask a research question in natural language, or type `/rc929` followed by your question to invoke the skill explicitly.
+
+**Requires Node.js 18+** for markdown-to-HTML conversion (no `npm install` needed).
 
 ---
 
@@ -127,7 +132,7 @@ Diagram types are picked up front and only drawn where evidence supports them:
 ## How it works
 
 ```
-Intake → Plan (2–6 areas) → Locate (WHERE) → Analyze (HOW) → Cross-check → Build HTML → Handoff
+Intake → Plan (2–6 areas) → Locate (WHERE) → Analyze (HOW) → Cross-check → Write Markdown → Convert to HTML → Handoff
 ```
 
 1. **Intake** — Confirm the question; read any files you named fully before exploring.
@@ -135,8 +140,9 @@ Intake → Plan (2–6 areas) → Locate (WHERE) → Analyze (HOW) → Cross-che
 3. **Locate** — Grep/Glob for keywords and naming patterns; group files by role (no deep reads yet).
 4. **Analyze** — Read entry points; trace calls and data transforms; record `file:line` for each step.
 5. **Cross-check** — Re-read critical paths; remove diagram nodes/edges without citations. Code wins over stale docs.
-6. **Build** — Copy `references/html-shell-template.html`, fill `<main>` with findings, follow `references/html-report-guide.md`.
-7. **Handoff** — Path to the HTML file, 2–3 sentence summary, where to start reading, any open gaps.
+6. **Write Markdown** — Write `<YYYY-MM-DD>-research-<topic>.md` per `references/markdown-report-guide.md`.
+7. **Convert** — Run `node .claude/skills/rc929/scripts/md-to-html.mjs <path.md>` to produce the HTML report.
+8. **Handoff** — Path to the HTML file, 2–3 sentence summary, where to start reading, any open gaps.
 
 Parallel subagents may run for independent exploration areas. Template sync (see below) always runs in a subagent so the main context stays free for research.
 
@@ -182,5 +188,6 @@ Research output HTML files default to `thoughts/research/` in the project root. 
 ## Learn more
 
 - [SKILL.md](.claude/skills/rc929/SKILL.md) — full workflow, quality checklist, failure modes
+- [markdown-report-guide.md](.claude/skills/rc929/references/markdown-report-guide.md) — markdown schema for agent-authored reports
 - [html-report-guide.md](.claude/skills/rc929/references/html-report-guide.md) — page structure, Mermaid rules, UI conventions
 - [template-sync-guide.md](.claude/skills/rc929/references/template-sync-guide.md) — how template restyling works
