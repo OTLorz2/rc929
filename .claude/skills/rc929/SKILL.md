@@ -1,16 +1,16 @@
 ---
 name: rc929
-description: Deep, accurate codebase exploration for user research questions, delivered as ONE self-contained HTML report with diagrams and interactive navigation. Use whenever the user asks to explore, map, trace, document, or research how code works in a repository (data flows, architecture, class dependencies, request lifecycles, module boundaries, agent/tool wiring)—even if they do not say "HTML" or "report". Prefer this over markdown research dumps when the goal is understanding a codebase visually. Also use when the user drops a new template.html into the rc929 skill folder to restyle reports. Accuracy of findings is mandatory; aesthetics support comprehension, never override facts.
+description: Deep, accurate codebase exploration for user research questions, delivered as ONE self-contained HTML report with diagrams and interactive navigation. Writes structured Markdown first, then converts via scripts/md-to-html.mjs to save tokens. Use whenever the user asks to explore, map, trace, document, or research how code works in a repository (data flows, architecture, class dependencies, request lifecycles, module boundaries, agent/tool wiring)—even if they do not say "HTML" or "report". Also use when the user drops a new template.html into the rc929 skill folder to restyle reports. Accuracy of findings is mandatory; aesthetics support comprehension, never override facts.
 ---
 
-# rc929 — Codebase Research → Single HTML Report
+# rc929 — Codebase Research → Markdown → HTML Report
 
-Turn a research question into **one** accurate, well-explained, interactive HTML file. Diagrams provide structural overview; **prose provides understanding**. Every diagram and code reference must be accompanied by clear textual explanation of what it means and why it matters.
+Turn a research question into **one** accurate, well-explained, interactive HTML file. The agent writes **Markdown content** per `markdown-report-guide.md`; a bundled script injects it into the HTML shell. Diagrams provide structural overview; **prose provides understanding**. Every diagram and code reference must be accompanied by clear textual explanation of what it means and why it matters.
 
 ## Non-negotiables
 
 1. **Accuracy first** — Every claim needs evidence (`path:line` or quoted symbol). If uncertain, mark `待验证` and do not draw it in diagrams as fact.
-2. **Exactly one deliverable** — One `.html` file, self-contained (inline CSS/JS; CDN only for fonts/mermaid if needed). No companion markdown, no folder of assets unless embedded as data URLs.
+2. **Final deliverable: one `.html` file** — Self-contained (inline CSS/JS; CDN only for fonts/mermaid if needed). Write intermediate `.md` per `markdown-report-guide.md`, then convert via `scripts/md-to-html.mjs`. Keep the `.md` alongside the HTML for debugging.
 3. **Document what IS** — No refactors, critiques, or "should" unless the user explicitly asked.
 4. **Fresh research** — Read the live codebase; do not trust stale docs alone.
 
@@ -21,9 +21,12 @@ Turn a research question into **one** accurate, well-explained, interactive HTML
 | `references/template-sync-guide.md` | **First**, if `template.html` exists in this skill's root directory |
 | `references/codebase-locator.md` | Before/during discovery — finding WHERE files live |
 | `references/codebase-analyzer.md` | After locators — tracing HOW code works |
-| `references/html-report-guide.md` | Before writing HTML — structure, mermaid rules, UI patterns |
+| `references/markdown-report-guide.md` | **At build** — write the `.md` report per this schema |
+| `references/html-report-guide.md` | Optional — HTML output conventions (converter handles markup) |
 | `references/diagram-layout-guide.md` | Before drawing diagrams — complexity limits, splitting, ELK |
-| `references/html-shell-template.html` | **Copy this shell** — layout, CSS, JS for the current template generation |
+
+**Do not** read or copy `references/html-shell-template.html` into context — the converter fills it.
+
 
 For visual polish, apply principles from the **frontend-design** skill (distinctive typography, cohesive palette, intentional motion)—but never sacrifice accuracy for aesthetics.
 
@@ -50,7 +53,7 @@ Glob or Read: .claude/skills/rc929/template.html
 3. Update `references/html-report-guide.md` (visual system + UI rules to match)
 4. **Delete** `template.html` from the skill root
 
-Wait for the subagent to finish. Briefly note what changed (fonts, layout, toc style). Then proceed to §1 — read the **updated** guide and shell when building HTML.
+Wait for the subagent to finish. Briefly note what changed (fonts, layout, toc style). Then proceed to §1 — read `markdown-report-guide.md` when building the report.
 
 ### 1. Intake
 
@@ -71,7 +74,7 @@ Choose diagram types **up front** (only where evidence supports them). For type 
 Mirror the proven two-phase pattern:
 
 **Phase A — Locate (WHERE)**  
-Act as **codebase-locator** (see `references/codebase-locator.md`): Grep/Glob/Bash for keywords, naming patterns, directories. Output grouped file lists with one-line roles. Do not deep-read implementation yet.
+Act as **codebase-locator** (see `references/codebase-locator.md`): Grep/Glob for keywords, naming patterns, directories. Output grouped file lists with one-line roles. Do not deep-read implementation yet.
 
 **Phase B — Analyze (HOW)**  
 Act as **codebase-analyzer** (see `references/codebase-analyzer.md`): Read entry points, trace calls and data transformations, record `file:line` for each step. Parallelize independent areas (Task/subagents when available).
@@ -80,35 +83,47 @@ Act as **codebase-analyzer** (see `references/codebase-analyzer.md`): Read entry
 - Re-read critical paths you diagrammed; remove nodes/edges you cannot cite.
 - Prefer primary source (source code) over README/architecture PNGs; if docs disagree with code, show **code truth** and note the doc mismatch briefly.
 
-### 4. Synthesize for explained HTML
+### 4. Synthesize for explained report
 
 **Pair every diagram with substantive prose.** A diagram shows structure; text explains behavior, rationale, and context that diagrams cannot convey.
 
-- **要点**: summary list with enough detail that a reader unfamiliar with the codebase can follow (format per `html-report-guide.md`)
+- **要点**: summary list with enough detail that a reader unfamiliar with the codebase can follow (format per `markdown-report-guide.md`)
 - Executive visual: 2–4 **focused** diagrams answering the question (split by concern per `references/diagram-layout-guide.md`), each followed by 2–4 paragraphs explaining the flow in plain language
 - Detail sections: for each topic area, write **explanatory paragraphs first** (what happens, why it's designed this way, what constraints apply), then support with diagrams/tables/code if helpful
-- Evidence panels: collapsible `file:line` snippets for readers who want to verify
+- Evidence panels: `:::evidence{file=… lines=… lang=…}` blocks with code excerpts for readers who want to verify
 
-Minimum text per section: each `<section>` must contain at least one `.section-prose` block (2+ sentences of explanatory context) beyond diagrams and bullet points. If a section is only a diagram with a caption, add explanation.
+Minimum text per section: each section must have prose paragraphs (≥2 sentences total) beyond bullets/diagrams. Sections with Mermaid need prose before the diagram and after the `Sources:` line (each ≥80 characters).
 
-### 5. Build the single HTML file
+### 5a. Write Markdown
 
-Follow `references/html-report-guide.md` and **base the page on** `references/html-shell-template.html`. Replace all placeholder/sample content with **this research's** findings only.
+Follow `references/markdown-report-guide.md`. Write the research content as a single `.md` file:
 
-- Filename: `<YYYY-MM-DD>-research-<kebab-topic>.html`
+- Filename: `<YYYY-MM-DD>-research-<kebab-topic>.md`
 - Default path: `thoughts/research/` (create if needed; overridden by user-specified path)
-- **Layout**: copy shell CSS/JS/layout intact; fill header + `<main>` with research content
-- **Section ids**: per guide (typically `id="<slug>"`) — Mermaid subgraph/node ids must use `sg_` / `n_` prefixes and never equal a section id
-- **TOC**: per guide — link text **exactly** equals `<h2>`
-- **Diagrams**: preserve shell diagram interactions (fullscreen button if present in shell)
-- **Mermaid**: `data-mermaid-source` preserved where shell uses it; re-init after render if shell requires
+- YAML frontmatter: `title`, `question`, `date` required; `repo`, `commit`, `branch`, `eyebrow`, `footer` optional
+- Sections: `## Title {#slug}` with Mermaid fences, `Sources:` captions, evidence directives
+- Mermaid subgraph/node ids: `sg_` / `n_` prefixes; never equal a section slug
+
+### 5b. Convert Markdown to HTML
+
+Run the bundled converter (do **not** hand-build HTML):
+
+```
+node .claude/skills/rc929/scripts/md-to-html.mjs thoughts/research/<YYYY-MM-DD>-research-<topic>.md
+```
+
+- Script reads `references/html-shell-template.html` and injects your markdown
+- Output: same path with `.html` extension (use `-o` for custom HTML path)
+- If script exits non-zero, fix markdown per error messages and re-run
+- Do **not** read or copy `html-shell-template.html` into context
 
 **Do not** split into multiple HTML pages or export PDF unless asked.
 
 ### 6. Handoff
 
 Tell the user:
-- Path to the HTML file
+- Path to the **HTML** file (primary deliverable)
+- Path to the source `.md` file (optional, for debugging)
 - 2–3 sentence factual summary
 - What to open first (which diagram/section)
 - Any `待验证` items or open gaps
@@ -116,20 +131,21 @@ Tell the user:
 
 ## Quality checklist (before delivery)
 
-- [ ] Single `.html` only
+- [ ] Markdown written per `markdown-report-guide.md`
+- [ ] Converter ran successfully (`md-to-html.mjs` exit 0)
+- [ ] Final `.html` has no unreplaced `{{` placeholders
 - [ ] Research question stated in header
 - [ ] At least one mermaid diagram if the topic involves flow/structure/interaction
 - [ ] Every diagram node/edge traceable to code (or labeled hypothetical)
-- [ ] **Every section has a `.section-prose` block with 2+ sentences of explanatory text**
+- [ ] **Every section has prose with 2+ sentences of explanatory text**
 - [ ] **Every diagram is followed by a prose paragraph explaining what it shows**
 - [ ] No improvement recommendations unless requested
-- [ ] Metadata block (date, commit, repo) present
-- [ ] Open in browser mentally: mermaid syntax valid; theme toggle re-renders diagrams (if shell has theme toggle)
+- [ ] Metadata block (date, commit, repo) present in frontmatter
+- [ ] Open in browser mentally: mermaid syntax valid
 - [ ] TOC labels match every `<h2>` exactly
 - [ ] Section ids unique; Mermaid ids prefixed `sg_`/`n_`; TOC anchors land on sections
 - [ ] Diagram layout rules followed (see `references/diagram-layout-guide.md` § Checklist)
-- [ ] Shell layout and typography match current `html-report-guide.md`
-- [ ] No copied template sample research text (e.g. claude-code paths when researching a different repo)
+- [ ] Evidence blocks use `:::evidence` with correct `lang` attribute
 
 ## Parallel agents (when available)
 
@@ -139,22 +155,23 @@ Spawn focused read-only tasks:
 - **Locator task**: "Find all files involved in [topic]; group by role; no implementation analysis."
 - **Analyzer task**: "Trace [flow] from entry X; document steps with file:line; no critique."
 
-Wait for template sync (if any) before research. Wait for all explore tasks before final synthesis. Main context synthesizes and builds HTML.
+Wait for template sync (if any) before research. Wait for all explore tasks before final synthesis. Main context writes markdown (§4–5a), runs converter (§5b), and hands off (§6).
 
 ## Common failure modes (avoid)
 
 | Failure | Fix |
 |---------|-----|
 | Main agent syncs template itself | Spawn subagent; preserve main context for research |
-| Template sample content leaks into report | Sync ignores content; build HTML from live research only |
+| Template sample content leaks into report | Sync ignores content; build from live research only |
 | Left template.html after sync | Subagent must delete it |
 | Stale guide after shell update | Sync updates both shell and guide together |
 | Generic purple-gradient "AI slop" UI | Follow synced shell; apply frontend-design within its system |
 | Diagram fiction | Build diagrams from analyzer notes only; delete unverified edges |
-| Markdown report instead of HTML | Deliverable must be `.html` |
-| Multiple files | Merge everything into one file |
+| HTML not generated / script not run | Run `md-to-html.mjs`; md-only is not a complete deliverable |
+| Agent copied shell manually instead of using script | Write `.md` + run converter |
+| Multiple HTML files | Merge everything into one report |
 | Diagram without explanation | Add 2–4 sentences of prose explaining what the diagram shows and why |
-| Section with only bullets/cards | Add a `.section-prose` paragraph giving context and rationale |
+| Section with only bullets/cards | Add prose paragraphs giving context and rationale |
 | TOC jumps wrong section | Mermaid id collides with `section id` — use `sg_` / `n_` prefixes |
 | Messy mermaid lines | Follow `references/diagram-layout-guide.md` — split by concern, use `sequenceDiagram` for RPC, ELK as last resort |
 

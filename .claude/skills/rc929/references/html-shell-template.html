@@ -1,8 +1,13 @@
 <!--
-  COPY this shell when building research HTML. Customize content only inside <header class="hero"> and <main>.
-  Do NOT remove or rewrite: CSS, bottom <script>, layout structure, diagram-fs-btn fullscreen, toc-rail JS.
+  HTML shell for rc929 research reports. Agents do NOT copy this file — write Markdown per
+  markdown-report-guide.md, then run scripts/md-to-html.mjs to inject content.
 
-  Source: derived from user-provided template.html (style/layout only — ignore sample research content).
+  Do NOT remove or rewrite: CSS, bottom <script>, layout structure, diagram-fs-btn fullscreen, toc-rail JS,
+  highlight.js CDN, or highlightSnippets() init for pre.snippet evidence blocks.
+
+  Placeholders filled by md-to-html.mjs:
+    {{TITLE}}, {{HERO_EYEBROW}}, {{HERO_TITLE}}, {{META_PILLS}}, {{QUESTION}},
+    {{TOC_ITEMS}}, {{MAIN_CONTENT}}, {{FOOTER}}
 
   ID rule: section id="<slug>" (e.g. summary, diagrams). Mermaid subgraph/node ids MUST use sg_ / n_
   prefixes and never equal a section id (prevents TOC anchor jumping into SVG).
@@ -22,6 +27,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/base16/default-light.min.css">
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
   <style>
     :root {
       --bg: #e4d9c8;
@@ -580,6 +588,23 @@
       color: var(--moss);
       background: var(--surface-2);
     }
+    pre.snippet.hljs {
+      background: var(--surface-2);
+      color: var(--moss);
+    }
+    pre.snippet .hljs-keyword,
+    pre.snippet .hljs-selector-tag { color: var(--moss); font-weight: 500; }
+    pre.snippet .hljs-string,
+    pre.snippet .hljs-regexp { color: var(--clay); }
+    pre.snippet .hljs-comment,
+    pre.snippet .hljs-quote { color: var(--muted); font-style: italic; }
+    pre.snippet .hljs-number,
+    pre.snippet .hljs-literal { color: var(--amber); }
+    pre.snippet .hljs-title,
+    pre.snippet .hljs-built_in,
+    pre.snippet .hljs-type { color: var(--sage); }
+    pre.snippet .hljs-attr,
+    pre.snippet .hljs-name { color: var(--moss); }
 
     /* Gaps */
     #gaps ul {
@@ -648,49 +673,14 @@
             <div class="toc-title">目录</div>
             <ol>
               <!-- href="#<slug>" text MUST match <section id="<slug>"><h2>…</h2> -->
-              <li><a href="#summary"><span class="idx">01</span>要点</a></li>
-              <li><a href="#diagrams"><span class="idx">02</span>架构概览</a></li>
-              <!-- {{TOC_ITEMS}} -->
+              {{TOC_ITEMS}}
             </ol>
           </div>
         </nav>
       </div>
 
       <main>
-        <section id="summary">
-          <div class="section-head"><span class="section-num">01</span><h2>要点</h2></div>
-          <ol class="summary-list">
-            <li><strong>发现 1</strong>：… <code class="ref">path:line</code></li>
-            <li><strong>发现 2</strong>：…</li>
-          </ol>
-        </section>
-
-        <section id="diagrams">
-          <div class="section-head"><span class="section-num">02</span><h2>架构概览</h2></div>
-          <div class="section-prose">
-            <p>{{介绍段落：描述本节涵盖的架构范围、主要组成部分，以及它们之间的协作关系。帮助读者在看图之前建立整体认知。}}</p>
-          </div>
-          <div class="diagram-wrap">
-            <pre class="mermaid">
-flowchart LR
-  subgraph sg_entry["入口层"]
-    n_main["main()"]
-  end
-  subgraph sg_core["核心层"]
-    n_router["router"]
-    n_handler["handler"]
-  end
-  n_main --> n_router
-  n_router --> n_handler
-            </pre>
-            <p class="diagram-caption">Sources: … — 示例：两层子图、短边、无跨层长连线。复杂架构请拆成多张图，见 html-report-guide.md § Diagram layout。</p>
-          </div>
-          <div class="section-prose">
-            <p>{{图后解释：用文字说明图中的关键路径、各节点的职责、数据如何流转，以及图中未能体现的约束条件或设计决策。}}</p>
-          </div>
-        </section>
-
-        <!-- {{MAIN_SECTIONS}} -->
+        {{MAIN_CONTENT}}
       </main>
     </div>
 
@@ -733,7 +723,23 @@ flowchart LR
         if (typeof mermaid.run === 'function') await mermaid.run({ nodes: nodes });
         else await mermaid.init(undefined, nodes);
         setupDiagramFullscreen();
+        highlightSnippets();
       })();
+
+      function highlightSnippets() {
+        if (typeof hljs === 'undefined') return;
+        document.querySelectorAll('pre.snippet').forEach(function (el) {
+          if (el.classList.contains('hljs')) return;
+          if ([].slice.call(el.classList).some(function (c) { return c.indexOf('language-') === 0; })) {
+            hljs.highlightElement(el);
+          } else {
+            var result = hljs.highlightAuto(el.textContent);
+            el.innerHTML = result.value;
+            el.classList.add('hljs');
+            if (result.language) el.classList.add('language-' + result.language);
+          }
+        });
+      }
 
       var fsIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>';
       var closeIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';

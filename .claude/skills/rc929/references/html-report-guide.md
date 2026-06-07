@@ -2,7 +2,7 @@
 
 Build **one** self-contained research page. Accuracy > decoration.
 
-**Always start from** `references/html-shell-template.html` — copy the full `<head>` CSS, page chrome, and bottom `<script>` block **intact**; only replace header metadata and `<main>` content.
+**Agents** write Markdown per `references/markdown-report-guide.md`, then run `scripts/md-to-html.mjs` — do **not** copy `html-shell-template.html` into context. The converter injects content into the shell's `<head>` CSS, page chrome, and bottom `<script>` block **intact**.
 
 If `template.html` was present in the skill root at invocation, it has already been consumed: a subagent synced this shell and guide from it, then deleted the file. Do not look for `template.html` during report build — use the updated files below.
 
@@ -11,9 +11,11 @@ If `template.html` was present in the skill root at invocation, it has already b
 | Layer | File | Purpose |
 |-------|------|---------|
 | Workflow | `SKILL.md` | Research process, accuracy, template sync trigger |
+| Content schema | `markdown-report-guide.md` | Agent writes `.md` per this contract |
+| Converter | `scripts/md-to-html.mjs` | md → html injection into shell |
 | Template sync | `template-sync-guide.md` | How to update shell from new `template.html` |
-| UI shell | `html-shell-template.html` | Layout, CSS, JS — current generation |
-| UI rules | `html-report-guide.md` | This file — conventions |
+| UI shell | `html-shell-template.html` | Layout, CSS, JS — filled by converter |
+| UI rules | `html-report-guide.md` | This file — HTML output conventions |
 | Discovery | `codebase-locator.md`, `codebase-analyzer.md` | Code exploration |
 
 Do not fork new CSS/JS patterns per report — extend the shell once if a feature is missing for everyone.
@@ -107,6 +109,35 @@ If the synced shell uses plain `<h2>` and `<ul>` instead, follow **that** patter
 
 Optional sections (reuse shell classes): `.card-grid` + `.step-card`, `.table-wrap`, `.evidence-stack` + `<details>`, `#gaps` list.
 
+## Evidence panels
+
+Collapsible code snippets in `.evidence-stack` use `<details>` + `pre.snippet`. The shell runs highlight.js on load — every `pre.snippet` **must** include a `language-*` class derived from the source file extension.
+
+```html
+<section id="evidence">
+  <div class="section-head"><span class="section-num">07</span><h2>关键证据</h2></div>
+  <div class="evidence-stack">
+    <details>
+      <summary>evals.json 结构 <code class="ref">evals.json:1-20</code></summary>
+      <pre class="snippet language-json">{ "cases": [...] }</pre>
+    </details>
+  </div>
+</section>
+```
+
+| Extension | Class |
+|-----------|-------|
+| `.json` | `language-json` |
+| `.md` | `language-markdown` |
+| `.py` | `language-python` |
+| `.go` | `language-go` |
+| `.ts`, `.tsx` | `language-typescript` |
+| `.js`, `.jsx` | `language-javascript` |
+| `.yaml`, `.yml` | `language-yaml` |
+| `.sh` | `language-bash` |
+| `.gitignore` | `language-ini` |
+| unknown | omit class (shell auto-detects via `highlightAuto`) |
+
 ## Mermaid
 
 - Real module/function names in labels
@@ -127,3 +158,4 @@ See `references/diagram-layout-guide.md` for all diagram layout rules: complexit
 6. 要点 uses shell's list format with cited findings
 7. Accuracy: diagrams traceable to code
 8. Diagram layout rules followed (see `diagram-layout-guide.md` § Checklist)
+9. Evidence `pre.snippet` blocks include `language-*` class per extension mapping
