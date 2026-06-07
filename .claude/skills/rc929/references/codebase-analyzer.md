@@ -31,6 +31,14 @@ Specialist at understanding **HOW** code works. Trace flows with precise `file:l
 
 ### Key Patterns
 - pattern name: `path:line` evidence
+
+### Suggested Diagrams
+Pre-split architecture into focused scopes per `diagram-layout-guide.md`.
+
+1. **[Scope name]** — type: `sequenceDiagram` | `flowchart LR` | `flowchart TB`
+   - Nodes: `symbol1`, `symbol2`, …
+   - Key edges: `A → B` (`path:line`)
+2. **[Scope name]** — …
 ```
 
 ## Do not
