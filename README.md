@@ -108,7 +108,7 @@ Use this when you want a guaranteed skill invocation instead of relying on the m
 
 - **Hero diagrams** — 1–2 Mermaid charts answering your question (flowcharts, sequence diagrams, dependency graphs, state machines — chosen by question shape).
 - **Summary** — short bullet list of key findings with inline `file:line` refs.
-- **Evidence panels** — collapsible code snippets; paths link back to the repo.
+- **Evidence panels** — collapsible code snippets with syntax highlighting (`language-*` classes); paths link back to the repo.
 - **Metadata** — repo name/path, date, git branch/commit when available, original question verbatim.
 - **Gaps** — anything marked **needs verification** or left unexplored.
 

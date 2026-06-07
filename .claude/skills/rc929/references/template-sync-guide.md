@@ -65,6 +65,8 @@ Produce a **generic, copy-ready shell**:
 4. Preserve **rc929 essentials** if the template lacks them:
    - Mermaid via CDN + `pre.mermaid` inside `.diagram-wrap`
    - `.diagram-caption` under each diagram
+   - highlight.js CDN (css + js) in `<head>` + `highlightSnippets()` init in bottom `<script>` (after Mermaid render)
+   - `pre.snippet` token color overrides in CSS (scoped to shell palette vars)
    - If template has no diagram fullscreen: **add** `setupDiagramFullscreen()` from the previous shell (inject `.diagram-fs-btn`, overlay, Ctrl+wheel zoom, Esc close) — this is a rc929 UX requirement unless the template explicitly implements an equivalent
 
 Replace sample `<main>` sections with one commented example block showing correct markup for 要点 + one diagram section.
@@ -108,6 +110,7 @@ Rules:
 - Extract layout/CSS/JS/structure from template.html
 - IGNORE all research content (titles, prose, diagram nodes, citations, sample paths)
 - Preserve rc929 diagram fullscreen if template lacks it
+- Preserve highlight.js CDN, `highlightSnippets()` init, and `pre.snippet` token CSS if template lacks them
 - Mermaid ids: sg_/n_ prefixes; section ids: simple slugs
 - After saving both files, DELETE template.html
 
@@ -139,3 +142,4 @@ Main agent: after subagent returns, **do not re-read template.html** (it's gone)
 | Main agent does sync itself | Offload to subagent; main agent starts research immediately after |
 | Kept old guide fonts while shell changed | Guide and shell must describe the same system |
 | Removed mermaid/TOC JS | Keep all functional JS from template; add missing rc929 essentials |
+| Removed highlight.js CDN/init | Restore highlight.js CDN, `highlightSnippets()`, and `pre.snippet` token CSS from previous shell |

@@ -107,6 +107,35 @@ If the synced shell uses plain `<h2>` and `<ul>` instead, follow **that** patter
 
 Optional sections (reuse shell classes): `.card-grid` + `.step-card`, `.table-wrap`, `.evidence-stack` + `<details>`, `#gaps` list.
 
+## Evidence panels
+
+Collapsible code snippets in `.evidence-stack` use `<details>` + `pre.snippet`. The shell runs highlight.js on load — every `pre.snippet` **must** include a `language-*` class derived from the source file extension.
+
+```html
+<section id="evidence">
+  <div class="section-head"><span class="section-num">07</span><h2>关键证据</h2></div>
+  <div class="evidence-stack">
+    <details>
+      <summary>evals.json 结构 <code class="ref">evals.json:1-20</code></summary>
+      <pre class="snippet language-json">{ "cases": [...] }</pre>
+    </details>
+  </div>
+</section>
+```
+
+| Extension | Class |
+|-----------|-------|
+| `.json` | `language-json` |
+| `.md` | `language-markdown` |
+| `.py` | `language-python` |
+| `.go` | `language-go` |
+| `.ts`, `.tsx` | `language-typescript` |
+| `.js`, `.jsx` | `language-javascript` |
+| `.yaml`, `.yml` | `language-yaml` |
+| `.sh` | `language-bash` |
+| `.gitignore` | `language-ini` |
+| unknown | omit class (shell auto-detects via `highlightAuto`) |
+
 ## Mermaid
 
 - Real module/function names in labels
@@ -122,3 +151,4 @@ Optional sections (reuse shell classes): `.card-grid` + `.step-card`, `.table-wr
 5. Diagram interactions work per shell (fullscreen, zoom, etc. if provided)
 6. 要点 uses shell's list format with cited findings
 7. Accuracy: diagrams traceable to code
+8. Evidence `pre.snippet` blocks include `language-*` class per extension mapping

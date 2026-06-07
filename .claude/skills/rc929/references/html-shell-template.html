@@ -1,6 +1,7 @@
 <!--
   COPY this shell when building research HTML. Customize content only inside <header class="hero"> and <main>.
-  Do NOT remove or rewrite: CSS, bottom <script>, layout structure, diagram-fs-btn fullscreen, toc-rail JS.
+  Do NOT remove or rewrite: CSS, bottom <script>, layout structure, diagram-fs-btn fullscreen, toc-rail JS,
+  highlight.js CDN, or highlightSnippets() init for pre.snippet evidence blocks.
 
   Source: derived from user-provided template.html (style/layout only — ignore sample research content).
 
@@ -20,6 +21,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/base16/default-light.min.css">
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
   <style>
     :root {
       --bg: #e4d9c8;
@@ -578,6 +581,23 @@
       color: var(--moss);
       background: var(--surface-2);
     }
+    pre.snippet.hljs {
+      background: var(--surface-2);
+      color: var(--moss);
+    }
+    pre.snippet .hljs-keyword,
+    pre.snippet .hljs-selector-tag { color: var(--moss); font-weight: 500; }
+    pre.snippet .hljs-string,
+    pre.snippet .hljs-regexp { color: var(--clay); }
+    pre.snippet .hljs-comment,
+    pre.snippet .hljs-quote { color: var(--muted); font-style: italic; }
+    pre.snippet .hljs-number,
+    pre.snippet .hljs-literal { color: var(--amber); }
+    pre.snippet .hljs-title,
+    pre.snippet .hljs-built_in,
+    pre.snippet .hljs-type { color: var(--sage); }
+    pre.snippet .hljs-attr,
+    pre.snippet .hljs-name { color: var(--moss); }
 
     /* Gaps */
     #gaps ul {
@@ -707,7 +727,23 @@ flowchart TB
         if (typeof mermaid.run === 'function') await mermaid.run({ nodes: nodes });
         else await mermaid.init(undefined, nodes);
         setupDiagramFullscreen();
+        highlightSnippets();
       })();
+
+      function highlightSnippets() {
+        if (typeof hljs === 'undefined') return;
+        document.querySelectorAll('pre.snippet').forEach(function (el) {
+          if (el.classList.contains('hljs')) return;
+          if ([].slice.call(el.classList).some(function (c) { return c.indexOf('language-') === 0; })) {
+            hljs.highlightElement(el);
+          } else {
+            var result = hljs.highlightAuto(el.textContent);
+            el.innerHTML = result.value;
+            el.classList.add('hljs');
+            if (result.language) el.classList.add('language-' + result.language);
+          }
+        });
+      }
 
       var fsIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>';
       var closeIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';

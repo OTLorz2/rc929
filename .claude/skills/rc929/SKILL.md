@@ -94,7 +94,7 @@ Act as **codebase-analyzer** (see `references/codebase-analyzer.md`): Read entry
 - **要点**: summary list with enough detail that a reader unfamiliar with the codebase can follow (format per `html-report-guide.md`)
 - Executive visual: 1–2 hero diagrams answering the question, each followed by 2–4 paragraphs explaining the flow in plain language
 - Detail sections: for each topic area, write **explanatory paragraphs first** (what happens, why it's designed this way, what constraints apply), then support with diagrams/tables/code if helpful
-- Evidence panels: collapsible `file:line` snippets for readers who want to verify
+- Evidence panels: collapsible `file:line` snippets for readers who want to verify; annotate each `pre.snippet` with a `language-*` class for syntax highlighting
 
 Minimum text per section: each `<section>` must contain at least one `.section-prose` block (2+ sentences of explanatory context) beyond diagrams and bullet points. If a section is only a diagram with a caption, add explanation.
 
@@ -105,6 +105,7 @@ Follow `references/html-report-guide.md` and **base the page on** `references/ht
 - Filename: `<YYYY-MM-DD>-research-<kebab-topic>.html`
 - Default path: `thoughts/research/` (create if needed; overridden by user-specified path)
 - **Layout**: copy shell CSS/JS/layout intact; fill header + `<main>` with research content
+- **Syntax highlighting**: preserve shell highlight.js CDN and `highlightSnippets()` init; evidence `pre.snippet` blocks must include `language-*` class per `html-report-guide.md`
 - **Section ids**: per guide (typically `id="<slug>"`) — Mermaid subgraph/node ids must use `sg_` / `n_` prefixes and never equal a section id
 - **TOC**: per guide — link text **exactly** equals `<h2>`
 - **Diagrams**: preserve shell diagram interactions (fullscreen button if present in shell)
@@ -136,6 +137,7 @@ Tell the user:
 - [ ] Section ids unique; Mermaid ids prefixed `sg_`/`n_`; TOC anchors land on sections
 - [ ] Shell layout and typography match current `html-report-guide.md`
 - [ ] No copied template sample research text (e.g. claude-code paths when researching a different repo)
+- [ ] Evidence `pre.snippet` blocks include `language-*` class for syntax highlighting
 
 ## Parallel agents (when available)
 
