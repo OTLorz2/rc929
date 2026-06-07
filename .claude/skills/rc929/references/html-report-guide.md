@@ -144,13 +144,18 @@ Collapsible code snippets in `.evidence-stack` use `<details>` + `pre.snippet`. 
 - `diagram-caption` with Sources
 - No subgraph/node id equal to any section id
 
+## Diagram layout
+
+See `references/diagram-layout-guide.md` for all diagram layout rules: complexity limits, splitting strategy, syntax patterns, and ELK configuration.
+
 ## Pre-delivery checklist
 
-1. Single `.html`; shell `<script>` block included unchanged
+1. Single `.html`; shell `<script type="module">` block included unchanged
 2. Header, meta, question panel filled with **this** research (not template sample text)
 3. All section ids match TOC `href`s; each TOC label equals its `<h2>`
 4. Click each TOC link — lands on correct section (not diagram SVG)
 5. Diagram interactions work per shell (fullscreen, zoom, etc. if provided)
 6. 要点 uses shell's list format with cited findings
 7. Accuracy: diagrams traceable to code
-8. Evidence `pre.snippet` blocks include `language-*` class per extension mapping
+8. Diagram layout rules followed (see `diagram-layout-guide.md` § Checklist)
+9. Evidence `pre.snippet` blocks include `language-*` class per extension mapping

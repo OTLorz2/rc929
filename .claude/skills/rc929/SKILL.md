@@ -23,8 +23,10 @@ Turn a research question into **one** accurate, well-explained, interactive HTML
 | `references/codebase-analyzer.md` | After locators — tracing HOW code works |
 | `references/markdown-report-guide.md` | **At build** — write the `.md` report per this schema |
 | `references/html-report-guide.md` | Optional — HTML output conventions (converter handles markup) |
+| `references/diagram-layout-guide.md` | Before drawing diagrams — complexity limits, splitting, ELK |
 
 **Do not** read or copy `references/html-shell-template.html` into context — the converter fills it.
+
 
 For visual polish, apply principles from the **frontend-design** skill (distinctive typography, cohesive palette, intentional motion)—but never sacrifice accuracy for aesthetics.
 
@@ -65,15 +67,7 @@ Gather metadata for the report footer/header:
 
 Decompose the question into 2–6 investigable areas (e.g., entry points, storage, external APIs, error paths). Use a todo list for multi-area research.
 
-Choose diagram types **up front** (only where evidence supports them):
-
-| Question shape | Prefer |
-|----------------|--------|
-| Pipelines, ETL, batch jobs | `flowchart` / `graph` |
-| Module/package dependencies | `graph` (classes/components as nodes) |
-| Multi-party RPC, webhooks, agents | `sequenceDiagram` |
-| State machines, modes | `stateDiagram-v2` |
-| Layered architecture | `flowchart` with subgraphs |
+Choose diagram types **up front** (only where evidence supports them). For type selection, complexity limits, and splitting rules, read `references/diagram-layout-guide.md`.
 
 ### 3. Explore (locator → analyzer)
 
@@ -94,7 +88,7 @@ Act as **codebase-analyzer** (see `references/codebase-analyzer.md`): Read entry
 **Pair every diagram with substantive prose.** A diagram shows structure; text explains behavior, rationale, and context that diagrams cannot convey.
 
 - **要点**: summary list with enough detail that a reader unfamiliar with the codebase can follow (format per `markdown-report-guide.md`)
-- Executive visual: 1–2 hero diagrams answering the question, each followed by 2–4 paragraphs explaining the flow in plain language
+- Executive visual: 2–4 **focused** diagrams answering the question (split by concern per `references/diagram-layout-guide.md`), each followed by 2–4 paragraphs explaining the flow in plain language
 - Detail sections: for each topic area, write **explanatory paragraphs first** (what happens, why it's designed this way, what constraints apply), then support with diagrams/tables/code if helpful
 - Evidence panels: `:::evidence{file=… lines=… lang=…}` blocks with code excerpts for readers who want to verify
 
@@ -150,6 +144,7 @@ Tell the user:
 - [ ] Open in browser mentally: mermaid syntax valid
 - [ ] TOC labels match every `<h2>` exactly
 - [ ] Section ids unique; Mermaid ids prefixed `sg_`/`n_`; TOC anchors land on sections
+- [ ] Diagram layout rules followed (see `references/diagram-layout-guide.md` § Checklist)
 - [ ] Evidence blocks use `:::evidence` with correct `lang` attribute
 
 ## Parallel agents (when available)
@@ -178,6 +173,7 @@ Wait for template sync (if any) before research. Wait for all explore tasks befo
 | Diagram without explanation | Add 2–4 sentences of prose explaining what the diagram shows and why |
 | Section with only bullets/cards | Add prose paragraphs giving context and rationale |
 | TOC jumps wrong section | Mermaid id collides with `section id` — use `sg_` / `n_` prefixes |
+| Messy mermaid lines | Follow `references/diagram-layout-guide.md` — split by concern, use `sequenceDiagram` for RPC, ELK as last resort |
 
 ## Example user prompts (trigger this skill)
 
