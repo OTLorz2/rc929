@@ -147,6 +147,19 @@ function parseSectionBlocks(content) {
       continue;
     }
 
+    if (line.startsWith('```')) {
+      const lang = line.slice(3).trim();
+      const codeLines = [];
+      i++;
+      while (i < lines.length && !lines[i].startsWith('```')) {
+        codeLines.push(lines[i]);
+        i++;
+      }
+      if (i < lines.length) i++;
+      blocks.push({ type: 'codefence', lang, source: codeLines.join('\n') });
+      continue;
+    }
+
     if (line.startsWith(':::evidence{')) {
       const attrEnd = line.indexOf('}');
       const attrs = parseEvidenceAttrs(line.slice(':::evidence{'.length, attrEnd));
@@ -185,6 +198,10 @@ function parseSectionBlocks(content) {
     while (i < lines.length && lines[i].trim() !== '' && !lines[i].startsWith('```') && !lines[i].startsWith(':::evidence{') && !/^\d+\.\s/.test(lines[i]) && !/^-\s/.test(lines[i])) {
       paraLines.push(lines[i]);
       i++;
+    }
+    if (paraLines.length === 0) {
+      i++;
+      continue;
     }
     blocks.push({ type: 'prose', text: paraLines.join('\n') });
   }
@@ -327,6 +344,14 @@ function validate(frontmatter, sections) {
     warnings.push('#summary section has no ordered list');
   }
 
+  for (const s of sections) {
+    for (const b of s.blocks) {
+      if (b.type !== 'codefence') continue;
+      const label = b.lang ? `\`\`\`${b.lang}` : '```';
+      warnings.push(`Section "${s.title}": ${label} fenced code block — prefer :::evidence{...} per markdown-report-guide.md`);
+    }
+  }
+
   return { errors, warnings };
 }
 
@@ -368,6 +393,12 @@ function renderEvidence(block) {
   return `            <details>\n              <summary>${summaryLabel} <code class="ref">${ref}</code></summary>\n              <pre${clsAttr}>${code}</pre>\n            </details>`;
 }
 
+function renderCodeFence(block) {
+  const langClass = LANG_MAP[block.lang] || (block.lang ? `language-${block.lang}` : '');
+  const clsAttr = langClass ? ` class="snippet ${langClass}"` : ' class="snippet"';
+  return `          <pre${clsAttr}>${escapeHtml(block.source)}</pre>`;
+}
+
 function renderSection(section, index) {
   const num = String(index + 1).padStart(2, '0');
   const parts = [];
@@ -384,6 +415,8 @@ function renderSection(section, index) {
       parts.push(renderList(block, section.slug));
     } else if (block.type === 'mermaid') {
       parts.push(renderMermaid(block));
+    } else if (block.type === 'codefence') {
+      parts.push(renderCodeFence(block));
     } else if (block.type === 'evidence') {
       if (!evidenceRendered) {
         parts.push('          <div class="evidence-stack">');
