@@ -71,7 +71,8 @@ function parseFrontmatter(text) {
   }
   const end = trimmed.indexOf('\n---', 3);
   if (end === -1) {
-    return { frontmatter: {}, body: text };
+    console.error("Error: Frontmatter opening '---' found but closing '---' is missing. Check for CRLF line endings or a missing second '---' line.");
+    process.exit(1);
   }
   const fmBlock = trimmed.slice(3, end).trim();
   const body = trimmed.slice(end + 4).replace(/^\s*\n/, '');
@@ -194,8 +195,28 @@ function parseSectionBlocks(content) {
       continue;
     }
 
+    if (/^\|.+\|/.test(line)) {
+      const tableLines = [];
+      while (i < lines.length && /^\|.+\|/.test(lines[i])) {
+        tableLines.push(lines[i]);
+        i++;
+      }
+      if (tableLines.length >= 2) {
+        const headerCells = tableLines[0].split('|').slice(1, -1).map(c => c.trim());
+        const sepIndex = tableLines.findIndex(l => /^\|[\s:]*-+[\s:]*/.test(l));
+        const bodyStart = sepIndex >= 0 ? sepIndex + 1 : 1;
+        const bodyRows = tableLines.slice(bodyStart).map(
+          r => r.split('|').slice(1, -1).map(c => c.trim())
+        );
+        blocks.push({ type: 'table', headers: headerCells, rows: bodyRows });
+      } else {
+        blocks.push({ type: 'prose', text: tableLines.join('\n') });
+      }
+      continue;
+    }
+
     const paraLines = [];
-    while (i < lines.length && lines[i].trim() !== '' && !lines[i].startsWith('```') && !lines[i].startsWith(':::evidence{') && !/^\d+\.\s/.test(lines[i]) && !/^-\s/.test(lines[i])) {
+    while (i < lines.length && lines[i].trim() !== '' && !lines[i].startsWith('```') && !lines[i].startsWith(':::evidence{') && !/^\d+\.\s/.test(lines[i]) && !/^-\s/.test(lines[i]) && !/^\|.+\|/.test(lines[i])) {
       paraLines.push(lines[i]);
       i++;
     }
@@ -218,7 +239,7 @@ function parseSections(body) {
     const headingLine = firstNewline === -1 ? part.trim() : part.slice(0, firstNewline).trim();
     const content = firstNewline === -1 ? '' : part.slice(firstNewline + 1).trim();
 
-    const m = headingLine.match(/^(.+?)\s+\{#(\w+)\}\s*$/);
+    const m = headingLine.match(/^(.+?)\s*\{#([\w-]+)\}\s*$/);
     if (!m) {
       sections.push({ title: headingLine, slug: null, blocks: parseSectionBlocks(content) });
     } else {
@@ -301,7 +322,12 @@ function validate(frontmatter, sections) {
   const slugs = sections.map((s) => s.slug);
   for (const s of sections) {
     if (!s.slug) {
-      errors.push(`Section "${s.title}" is missing {#slug} anchor`);
+      const anchorMatch = s.title.match(/\{#([^}]*)\}/);
+      if (anchorMatch) {
+        errors.push(`Section "${s.title}": slug "${anchorMatch[1]}" could not be parsed — slugs must match [a-zA-Z0-9_-]+ and heading must end with {#slug}`);
+      } else {
+        errors.push(`Section "${s.title}" is missing {#slug} anchor`);
+      }
     }
   }
 
@@ -393,6 +419,18 @@ function renderEvidence(block) {
   return `            <details>\n              <summary>${summaryLabel} <code class="ref">${ref}</code></summary>\n              <pre${clsAttr}>${code}</pre>\n            </details>`;
 }
 
+function renderTable(block) {
+  const ths = block.headers.map(h => `<th>${inlineFormat(h)}</th>`).join('');
+  const headRow = `<tr>${ths}</tr>`;
+  const bodyRows = block.rows
+    .map(r => {
+      const tds = r.map(c => `<td>${inlineFormat(c)}</td>`).join('');
+      return `              <tr>${tds}</tr>`;
+    })
+    .join('\n');
+  return `          <div class="table-wrap">\n            <table>\n              <thead><tr>${ths}</tr></thead>\n              <tbody>\n${bodyRows}\n              </tbody>\n            </table>\n          </div>`;
+}
+
 function renderCodeFence(block) {
   const langClass = LANG_MAP[block.lang] || (block.lang ? `language-${block.lang}` : '');
   const clsAttr = langClass ? ` class="snippet ${langClass}"` : ' class="snippet"';
@@ -415,6 +453,8 @@ function renderSection(section, index) {
       parts.push(renderList(block, section.slug));
     } else if (block.type === 'mermaid') {
       parts.push(renderMermaid(block));
+    } else if (block.type === 'table') {
+      parts.push(renderTable(block));
     } else if (block.type === 'codefence') {
       parts.push(renderCodeFence(block));
     } else if (block.type === 'evidence') {
@@ -492,7 +532,7 @@ function main() {
   let mdText;
   let shellText;
   try {
-    mdText = readFileSync(args.input, 'utf8');
+    mdText = readFileSync(args.input, 'utf8').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
     shellText = readFileSync(args.shell, 'utf8');
   } catch (e) {
     console.error(`Error reading file: ${e.message}`);
