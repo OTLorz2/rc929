@@ -36,19 +36,19 @@
         <mxCell id="fl_boundary" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#9A9A9A;dashed=1;dashPattern=8 8;container=1;pointerEvents=0;" vertex="1" parent="1">
           <mxGeometry x="40" y="80" width="980" height="520" as="geometry" />
         </mxCell>
-        <mxCell id="fl_process_style" value="Process (replace)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8EEF7;strokeColor=#3D5A80;fontColor=#1A1A1A;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="80" y="160" width="160" height="64" as="geometry" />
+        <mxCell id="fl_process_style" value="Load config, then start CLI&lt;br&gt;&lt;code&gt;cmd/cli.go:42&lt;/code&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8EEF7;strokeColor=#3D5A80;fontColor=#1A1A1A;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="150" width="180" height="72" as="geometry" />
         </mxCell>
-        <mxCell id="fl_data_style" value="Data (replace)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#EAF5EA;strokeColor=#3D7A45;fontColor=#1A1A1A;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="320" y="150" width="140" height="80" as="geometry" />
+        <mxCell id="fl_data_style" value="Persist job row&lt;br&gt;&lt;code&gt;store/jobs.go:88&lt;/code&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#EAF5EA;strokeColor=#3D7A45;fontColor=#1A1A1A;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="320" y="146" width="160" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="fl_external_style" value="External (replace)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5EDE6;strokeColor=#8A5A2B;fontColor=#1A1A1A;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="1080" y="160" width="160" height="64" as="geometry" />
+        <mxCell id="fl_external_style" value="Call upstream API&lt;br&gt;&lt;code&gt;client/api.go:15&lt;/code&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5EDE6;strokeColor=#8A5A2B;fontColor=#1A1A1A;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="150" width="180" height="72" as="geometry" />
         </mxCell>
         <mxCell id="fl_edge_sample" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#3D5A80;endArrow=block;endFill=1;" edge="1" parent="1" source="fl_process_style" target="fl_data_style">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="fl_note" value="&lt;b&gt;Feynman note&lt;/b&gt;&lt;br&gt;Explain this page in plain language (what happens, why it is shaped this way, what evidence supports it). Include short &lt;code&gt;path:line&lt;/code&gt; cites. Prefer ~8 content nodes; max 10." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F7F7F2;strokeColor=#6B6B6B;fontColor=#1A1A1A;fontSize=12;" vertex="1" parent="1">
+        <mxCell id="fl_note" value="&lt;b&gt;Summary&lt;/b&gt;&lt;br&gt;Explain this page in plain language (what happens, why it is shaped this way, what evidence supports it). Include short &lt;code&gt;path:line&lt;/code&gt; cites. Prefer ~8 content nodes; max 10. Label each node with short workflow behavior, then a cite." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F7F7F2;strokeColor=#6B6B6B;fontColor=#1A1A1A;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="40" y="640" width="980" height="180" as="geometry" />
         </mxCell>
         <mxCell id="fl_legend" value="Styles: blue process · green data · warm external · dashed = boundary" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#888888;" vertex="1" parent="1">
