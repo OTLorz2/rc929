@@ -31,9 +31,7 @@ Turn a research question into **one** accurate, editable `.drawio` file. The age
 
 Confirm the research question. If the user named files/docs, **read them fully first** (no partial reads) before spawning sub-tasks.
 
-Gather metadata for the Overview page:
-- Repository path/name, date (ISO), git branch/commit if available
-- Original question verbatim
+Do **not** put `question`, `repo`, `date`, `branch`, or `commit` on the Overview page. Keep those only if needed for your own notes; Overview starts with title + 要点.
 
 ### 2. Plan
 
@@ -55,10 +53,11 @@ Act as **codebase-analyzer** (see `references/codebase-analyzer.md`): Read entry
 
 ### 4. Synthesize for the drawio report
 
-**Pair every Flow diagram with a Summary** on the same page. The diagram shows structure; the Summary explains behavior and context.
+**Pair every Flow diagram with a Summary** on the same page. The diagram shows structure; the Summary explains behavior, context, and **why** major steps or structures exist.
 
-- **Overview**: 要点 list with enough detail for a newcomer; metadata; 待验证 if any (`drawio-content-guide.md`)
-- **Flow pages**: one concern each; ~8 content nodes (max 10); each node labeled with short workflow behavior + `path:line` (two lines); longer explanation in the Summary
+- **Overview**: title + 要点 + 待验证 if any — **no** metadata block (`drawio-content-guide.md`). Each 要点 item is a plain-language sentence, then the cite alone on the next line (do not mix `` `path:line` `` into the sentence).
+- **Flow pages**: one concern each; ~8 content nodes (max 10); each node labeled with short workflow behavior + `path:line` (two lines). Prefer the starter’s rich host/guest/failure vocabulary; use simple process/data/external only when rich scaffolding would be mostly empty.
+- **Summary**: for each major step or structure, state what happens and **why it exists / why it is done that way**, grounded in observed behavior and evidence. Do not require a fixed named-principle checklist.
 - Do not invent relationships to make the picture prettier
 
 ### 5. Author the `.drawio` file
@@ -71,7 +70,7 @@ Act as **codebase-analyzer** (see `references/codebase-analyzer.md`): Read entry
 
    Use a user-specified path when provided.
 
-2. **Read** `templates/research-starter.drawio` as the style/structure reference (page shape, colors, process/data/external vocabulary). **Write a new** uncompressed `.drawio` that matches that visual language. Do **not** shell-`cp` the starter into the target directory and do **not** seed the target from starter bytes as a copy step.
+2. **Read** `templates/research-starter.drawio` as the style/structure reference (Overview + rich Flow vocabulary: nested host/guest boundaries, failure gutter, role colors). **Write a new** uncompressed `.drawio` that matches that visual language. Do **not** shell-`cp` the starter into the target directory and do **not** seed the target from starter bytes as a copy step.
 
 3. Snapshot before edits:
 
@@ -79,7 +78,7 @@ Act as **codebase-analyzer** (see `references/codebase-analyzer.md`): Read entry
    python3 .claude/skills/rc929/scripts/audit_drawio.py FILE --snapshot /tmp/drawio-before.json
    ```
 
-4. Fill **Overview**. For each planned area, add a **Flow** page and draw evidence-backed content. Follow `drawio-editing-rules.md` (XML escaping, cell ID namespaces, preserve non-target pages). Node labels: line 1 = short natural-language behavior; line 2 = `path:line`. Connectors: midpoint attach is fine when waypoints diverge; do not stack overlapping edge segments.
+4. Fill **Overview** (title + 要点 + 待验证). For each planned area, add a **Flow** page and draw evidence-backed content. Follow `drawio-editing-rules.md` (XML escaping, cell ID namespaces, preserve non-target pages). Node labels: line 1 = short natural-language behavior; line 2 = `path:line`. Connectors: midpoint attach is fine when waypoints diverge; do not stack overlapping edge segments.
 
 5. Re-audit after edits:
 
@@ -106,14 +105,16 @@ Tell the user:
 ## Quality checklist (before delivery)
 
 - [ ] Deliverable authored from scratch (starter not copied into target dir); path matches `drawio-content-guide.md` (or user override)
-- [ ] Overview has question, metadata, 要点, and 待验证 if needed
+- [ ] Overview has title + 要点 (+ 待验证 if needed); **no** question/repo/date/branch/commit block
+- [ ] Each 要点 item is prose, then cite alone on the next line (no inline cite mixed into the sentence)
 - [ ] Each Flow page: focused diagram + Summary + evidence cites
+- [ ] Each Flow Summary includes causal why for major steps/structures
+- [ ] Flow pages prefer rich starter vocabulary; simple layout only when rich scaffolding would be empty
 - [ ] Nodes use two-line labels: short workflow behavior + `path:line` (not file/symbol-only titles)
 - [ ] Every diagram node/edge traceable to code (or omitted / listed as 待验证)
 - [ ] Uncompressed XML; attributes escaped; page-specific cell ID prefixes
 - [ ] `audit_drawio.py` run; structural errors cleared; warnings addressed
 - [ ] No research `.md` / `.html` produced as part of this skill
-- [ ] Research question stated on Overview
 
 ## Parallel agents (when available)
 
@@ -134,6 +135,11 @@ Wait for all explore tasks before authoring the `.drawio`. Main context writes t
 | Stacked overlapping edge segments | Diverge with waypoints or stagger ports |
 | `cp` starter into research dir | Read starter as reference; write new deliverable |
 | Side prose titled Feynman note | Retitle to Summary |
+| Overview still leads with metadata | Delete metadata region; start with title + 要点 |
+| Cite jammed into finding prose | Split: sentence, then cite on its own line |
+| Summary only narrates what, not why | Add causal why grounded in observed behavior + cite |
+| Every page forced into empty nested/failure chrome | Use allow-simple when scaffolding would be empty |
+| Agents copy and `~/.agents` diverge | Sync full skill tree after edits |
 | Compressed draw.io XML | Open/save uncompressed; keep `mxGraphModel` in the file |
 | Skipping audit | Always run `audit_drawio.py` before handoff |
 | Writing a markdown/HTML report | Deliverable is `.drawio` only; prose lives on pages |
