@@ -21,37 +21,57 @@ Fill the Overview page (do not put a large flowchart here). Match the starter’
 | Region | Required | Content |
 |--------|----------|---------|
 | Title | yes | Short report title (plain text) |
-| Metadata | yes | `question` verbatim; `date` ISO `YYYY-MM-DD`; `repo`, `branch`, `commit` when available |
-| 要点 / Key findings | yes | Ordered findings a newcomer can follow; each claim with a short `` `path:line` `` when possible |
+| 要点 / Key findings | yes | Ordered findings; each item = prose line, then cite line |
 | 待验证 | when needed | Uncertainties; remove the placeholder bullet if none |
 | Hint line | optional | Keep or delete; never replace with a diagram |
+| Metadata (`question` / `repo` / `date` / `branch` / `commit`) | **no** | Do not include this block |
+
+**要点 item shape**
+
+```text
+1. Plain-language finding with no inline path:line mixed into the sentence.
+src/planner.ts:49-84
+```
+
+In draw.io HTML labels, put the cite on its own line after `<br>`, wrapped in `<code>…</code>`.
 
 **Rules**
 
 1. Overview text must be enough that a reader unfamiliar with the codebase understands the answer’s shape before opening Flow pages.
 2. Anything uncertain is listed under 待验证 and is **not** drawn as fact on Flow pages.
-3. Metadata fields may stay empty only when truly unavailable (still keep the labels).
+3. Do not mix `` `path:line` `` into the finding sentence; the cite stands alone on the next line.
 
 ---
 
 ## Flow pages
 
-Add one Flow page per investigable area. Rename the page to the concern (e.g. `Runtime path`, `Error handling`). Match the starter’s Flow visual language (boundary, process/data/external styles, Summary region).
+Add one Flow page per investigable area. Rename the page to the concern (e.g. `Runtime path`, `Error handling`). Match the starter’s Flow visual language (host/guest boundaries, role colors, failure gutter when applicable, Summary region). See `drawio-layout-guide.md` for prefer-rich / allow-simple.
 
 | Region | Required | Content |
 |--------|----------|---------|
 | Page title | yes | Matches the page name / concern |
 | Diagram | yes | Evidence-backed nodes and edges; prefer ~8 content nodes, max 10 |
-| Summary | yes | Plain-language explanation of what the page shows and why (≥2 sentences). Include short `` `path:line` `` cites |
-| Style samples | replace | Use real process/data/external nodes; delete unused samples |
+| Summary | yes | Plain-language what + **causal why** for major steps/structures; short `` `path:line` `` cites (≥2 sentences) |
+| Style samples | replace | Use real role-colored nodes; delete unused samples |
 
 **Rules**
 
 1. One concern per page. Split runtime, errors, infrastructure, and package topology when combining densifies edges.
 2. Every node and edge must be traceable to code, or omitted / listed under Overview 待验证.
 3. Shorten edge labels; put longer explanation in the Summary.
-4. Reuse the starter’s visual language (blue process, green data, warm external, dashed empty boundary).
+4. Prefer the starter’s rich visual language (nested host/guest, failure gutter, role colors). Allow simple process/data/external only when rich scaffolding would be mostly empty.
 5. Prefix new cell IDs with a page-specific namespace (e.g. `rt_`, `err_`).
+
+---
+
+## Summary (causal why)
+
+Every Flow page includes a side region titled **Summary**.
+
+- Explain what the page shows **and why** each major step or structure exists / is done that way.
+- Ground the why in observed behavior and evidence; include short `` `path:line` `` cites.
+- Do **not** require a fixed checklist of named principles (e.g. isolation, least privilege). Causal explanation is enough.
+- Longer why belongs in Summary; edge labels stay short.
 
 ---
 
@@ -71,6 +91,7 @@ Cites may also appear in the Summary and Overview 要点; they do not replace th
 ## Citation format
 
 - Prefer inline `` `path/to/file.ext:line` `` or `` `path/to/file.ext:start-end` ``.
+- On Overview 要点, put the cite on its **own line** under the finding (see above).
 - Quoted symbol names are acceptable when a single line is misleading; still name the file.
 - Do not paste large code blocks into the diagram; cite and summarize.
 

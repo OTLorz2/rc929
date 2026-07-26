@@ -14,6 +14,17 @@ Use this guide before drawing or substantially rearranging a page.
 
 Do not mix runtime flow, package dependencies, deployment topology, and observability in one page.
 
+## Rich Flow vocabulary (prefer)
+
+Match `templates/research-starter.drawio` when the researched path has orchestration, isolation, or fail-closed behavior:
+
+- **Outer host / trusted control** boundary for orchestration, promote, freeze, and verify.
+- **Inner dashed guest / isolate** boundary when execution is sandboxed or otherwise isolated.
+- **Failure gutter** (bottom or side) with a fail-closed node; use a dashed warm/red edge from boundary or provider errors.
+- **Role color families:** planner blue · executor amber · provider violet · guest rose · staging yellow · data/freeze green cylinder · verify green · failure pink/coral · external warm (outside or at edge).
+
+**Prefer rich.** Allow the simple process / data / external set only when nested or failure scaffolding would be mostly empty (for example a pure package topology with no isolate or fail-closed path).
+
 ## Complexity budget
 
 - Target about 8 content nodes and 12 semantic edges.

@@ -12,7 +12,7 @@ Use with `templates/research-starter.drawio` (reference only) and `scripts/audit
    python3 .claude/skills/rc929/scripts/audit_drawio.py FILE --snapshot /tmp/drawio-before.json
    ```
 
-4. Inspect the target page and any reference page (usually the Flow page in `research-starter.drawio`). Reuse page dimensions, shape vocabulary, typography, colors, arrow styles, and the distinction between data, process, boundary, and external-system nodes. When creating a new deliverable, author a new file that matches this visual language — do not `cp` the starter into the output path.
+4. Inspect the target page and any reference page (usually the Flow page in `research-starter.drawio`). Reuse page dimensions, shape vocabulary, typography, colors, arrow styles, and the distinction between host/guest boundaries, role-colored process nodes, data, failure, and external-system nodes. When creating a new deliverable, author a new file that matches this visual language — do not `cp` the starter into the output path. Prefer the rich starter composition; allow simple process/data/external only when rich scaffolding would be mostly empty.
 5. Plan one primary reading direction and a small number of lanes. Read `drawio-layout-guide.md` before creating or substantially rearranging a diagram.
 6. Edit only the requested page. Preserve page names, page IDs, non-target pages, and existing cells outside the requested scope. Prefix new cell IDs with a short page-specific namespace (e.g. `ov_`, `fl_`, `err_`).
 7. Escape XML attribute content correctly: use `&lt;`, `&gt;`, `&amp;`, and `&quot;`. Keep HTML labels inside the `value` attribute rather than inserting raw tags.
@@ -27,8 +27,10 @@ Use with `templates/research-starter.drawio` (reference only) and `scripts/audit
 
 ## Editing rules
 
-- Write a **Summary** beside the diagram (≥2 sentences, plain language, with short `path:line` cites).
+- Overview: no metadata block (`question` / `repo` / `date` / `branch` / `commit`). Each 要点 item is plain prose, then the cite alone on the next line.
+- Write a **Summary** beside the diagram (≥2 sentences, plain language, with short `path:line` cites). Include **causal why** for each major step or structure (grounded in observed behavior and evidence); do not require a fixed named-principle checklist.
 - Label content nodes with two lines: short workflow behavior, then `path:line`. Do not use file/symbol-only titles.
+- Prefer rich starter vocabulary (nested host/guest, failure gutter, role colors). Allow simple process/data/external when rich scaffolding would be empty.
 - Mid-side connector attach is fine when waypoints immediately separate tracks; do not leave multiple edges stacked on the same segment.
 - Default to exact, evidence-backed nodes and edges. Do not invent relationships.
 - Keep one concern per page. Split architecture, runtime flow, error flow, and infrastructure when combining them would create long cross-page-style edges.
@@ -36,7 +38,7 @@ Use with `templates/research-starter.drawio` (reference only) and `scripts/audit
 - Prefer direct or short orthogonal connectors. Use at most two intentional bends unless an obstacle forces another.
 - Do not route through nodes, labels, or unrelated containers. Reserve gutters between lanes for return and error paths.
 - Shorten edge labels; move explanations into node text or the Summary.
-- Keep external processes outside the internal boundary and distinguish them consistently.
+- Keep external processes outside the relevant internal boundary and distinguish them consistently.
 - Treat permissions or prompts as preventive controls and audits or checks as verification controls when the source makes that distinction.
 - Do not modify another page merely to make its style more consistent.
 
