@@ -40,6 +40,9 @@ Do not mix runtime flow, package dependencies, deployment topology, and observab
 - Do not add a turn merely for symmetry.
 - Avoid routing behind an intermediate node; an edge that disappears under a box is ambiguous.
 - Keep parallel edges on separated tracks. Do not stack unrelated edges on the same segment.
+- Mid-side attach (~0.5 on an edge) is acceptable when waypoints immediately fan routes onto separated tracks.
+- Do not leave multiple edges stacked on the same segment after attach; if they would overlap, diverge with waypoints or stagger ports along the side.
+- Prefer port stagger when that is clearer than a shared midpoint plus fan-out.
 - Route return and failure paths through reserved outer gutters rather than against the main direction.
 - Avoid edge-edge crossings. If a crossing remains, reorder nodes or split the concern before adding line jumps.
 - Keep labels on straight, uncongested segments. Shorten labels rather than widening the route.
