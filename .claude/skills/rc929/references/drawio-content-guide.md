@@ -2,7 +2,7 @@
 
 Agents put research prose **inside** the `.drawio` pages. Do **not** write a research `.md` or `.html` report to disk.
 
-Copy `templates/research-starter.drawio` to the output path, then replace placeholders. Follow `drawio-editing-rules.md` and `drawio-layout-guide.md` for XML and layout.
+Read `templates/research-starter.drawio` as an internal visual/structure reference, then **write a new** uncompressed `.drawio` at the output path that matches its page shape and style vocabulary. Do **not** `cp` or byte-seed the starter into the target directory. Follow `drawio-editing-rules.md` and `drawio-layout-guide.md` for XML and layout.
 
 ---
 
@@ -16,7 +16,7 @@ Copy `templates/research-starter.drawio` to the output path, then replace placeh
 
 ## Overview page
 
-Fill the Overview page in the starter (do not put a large flowchart here).
+Fill the Overview page (do not put a large flowchart here). Match the starter’s Overview regions.
 
 | Region | Required | Content |
 |--------|----------|---------|
@@ -36,22 +36,35 @@ Fill the Overview page in the starter (do not put a large flowchart here).
 
 ## Flow pages
 
-Duplicate the starter `Flow` page once per investigable area. Rename the page to the concern (e.g. `Runtime path`, `Error handling`).
+Add one Flow page per investigable area. Rename the page to the concern (e.g. `Runtime path`, `Error handling`). Match the starter’s Flow visual language (boundary, process/data/external styles, Summary region).
 
 | Region | Required | Content |
 |--------|----------|---------|
 | Page title | yes | Matches the page name / concern |
 | Diagram | yes | Evidence-backed nodes and edges; prefer ~8 content nodes, max 10 |
-| Feynman note | yes | Plain-language explanation of what the page shows and why (≥2 sentences). Include short `` `path:line` `` cites |
-| Style samples | replace | Swap starter process/data/external placeholders for real nodes; delete unused samples |
+| Summary | yes | Plain-language explanation of what the page shows and why (≥2 sentences). Include short `` `path:line` `` cites |
+| Style samples | replace | Use real process/data/external nodes; delete unused samples |
 
 **Rules**
 
 1. One concern per page. Split runtime, errors, infrastructure, and package topology when combining densifies edges.
 2. Every node and edge must be traceable to code, or omitted / listed under Overview 待验证.
-3. Shorten edge labels; put longer explanation in the Feynman note.
+3. Shorten edge labels; put longer explanation in the Summary.
 4. Reuse the starter’s visual language (blue process, green data, warm external, dashed empty boundary).
 5. Prefix new cell IDs with a page-specific namespace (e.g. `rt_`, `err_`).
+
+---
+
+## Node labels
+
+Content nodes use **two lines**:
+
+1. **Line 1:** short natural-language workflow behavior (verb phrase: what happens in the flow).
+2. **Line 2:** `` `path:line` `` or `` `path:start-end` ``.
+
+**Forbidden** as the sole label: bare symbols or bare file names (e.g. `Run()`, `cli.go`).
+
+Cites may also appear in the Summary and Overview 要点; they do not replace the two-line node pattern.
 
 ---
 
