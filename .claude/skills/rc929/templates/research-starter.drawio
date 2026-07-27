@@ -7,14 +7,17 @@
         <mxCell id="ov_title" value="Research title (replace)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=22;fontStyle=1;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="40" y="30" width="720" height="40" as="geometry" />
         </mxCell>
+        <mxCell id="ov_teach" value="&lt;b&gt;Summary&lt;/b&gt;&lt;br&gt;&lt;br&gt;Like a kitchen pass: tickets are checked before anything hits the stove.&lt;br&gt;&lt;br&gt;The host verifies the plan, then schedules work so the guest only runs after checks pass. &lt;code&gt;path/to/file.ext:12&lt;/code&gt;&lt;br&gt;&lt;br&gt;Unsafe work must not start until the control plane has a trusted plan." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F7F7F2;strokeColor=#6B6B6B;fontColor=#1A1A1A;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="900" height="140" as="geometry" />
+        </mxCell>
         <mxCell id="ov_summary" value="&lt;b&gt;要点 / Key findings&lt;/b&gt;&lt;br&gt;1. Plain finding sentence with no inline cite mixed in.&lt;br&gt;&lt;code&gt;path/to/file.ext:12&lt;/code&gt;&lt;br&gt;2. Second finding in plain language.&lt;br&gt;&lt;code&gt;path/to/other.ext:34-40&lt;/code&gt;&lt;br&gt;3. Third finding explaining the answer shape for a newcomer.&lt;br&gt;&lt;code&gt;path/to/third.ext:50&lt;/code&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F7F7F2;strokeColor=#6B6B6B;fontColor=#1A1A1A;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="40" y="90" width="900" height="320" as="geometry" />
+          <mxGeometry x="40" y="250" width="900" height="280" as="geometry" />
         </mxCell>
         <mxCell id="ov_gaps" value="&lt;b&gt;待验证 / Needs verification&lt;/b&gt;&lt;br&gt;- (remove this bullet if none)" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#FFF8E7;strokeColor=#B08D2A;fontColor=#1A1A1A;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="40" y="440" width="900" height="160" as="geometry" />
+          <mxGeometry x="40" y="550" width="900" height="160" as="geometry" />
         </mxCell>
-        <mxCell id="ov_hint" value="No large flowchart on this page. Put each flow on its own Flow page. No question/repo/date/branch/commit metadata here." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#888888;fontStyle=2;" vertex="1" parent="1">
-          <mxGeometry x="40" y="620" width="900" height="30" as="geometry" />
+        <mxCell id="ov_hint" value="No large flowchart on this page. Put each flow on its own Flow page. No question/repo/date/branch/commit metadata here. Summary sits above 要点." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#888888;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="730" width="900" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
@@ -98,8 +101,8 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="fl_note" value="&lt;b&gt;Summary&lt;/b&gt;&lt;br&gt;Explain what happens on this page and why each major step or structure exists, grounded in observed behavior and evidence. Include short &lt;code&gt;path:line&lt;/code&gt; cites. Prefer rich host/guest/failure vocabulary; use simple process/data/external only when rich scaffolding would be empty. ~8 content nodes; max 10." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F7F7F2;strokeColor=#6B6B6B;fontColor=#1A1A1A;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="40" y="560" width="1100" height="160" as="geometry" />
+        <mxCell id="fl_note" value="&lt;b&gt;Summary&lt;/b&gt;&lt;br&gt;&lt;br&gt;Like a kitchen pass: tickets are checked before anything hits the stove.&lt;br&gt;&lt;br&gt;The host verifies the plan DAG, then schedules a serial build so guest work only runs after checks pass. Prefer rich host/guest/failure vocabulary; use simple process/data/external only when rich scaffolding would be empty. ~8 content nodes; max 10. &lt;code&gt;planner/plan.go:20&lt;/code&gt;&lt;br&gt;&lt;br&gt;Unsafe work must not start until the control plane has a trusted plan." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=8;fillColor=#F7F7F2;strokeColor=#6B6B6B;fontColor=#1A1A1A;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="560" width="1100" height="200" as="geometry" />
         </mxCell>
         <mxCell id="fl_legend" value="Styles: planner blue · executor amber · provider violet · guest rose · staging yellow · freeze/verify green · failure pink · external warm · dashed red = fail closed · nested dashed = guest" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#666666;" vertex="1" parent="1">
           <mxGeometry x="1180" y="300" width="280" height="120" as="geometry" />
