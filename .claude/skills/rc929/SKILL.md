@@ -31,7 +31,7 @@ Turn a research question into **one** accurate, editable `.drawio` file. The age
 
 Confirm the research question. If the user named files/docs, **read them fully first** (no partial reads) before spawning sub-tasks.
 
-Do **not** put `question`, `repo`, `date`, `branch`, or `commit` on the Overview page. Keep those only if needed for your own notes; Overview starts with title + 要点.
+Do **not** put `question`, `repo`, `date`, `branch`, or `commit` on the Overview page. Keep those only if needed for your own notes; Overview starts with title + Summary + 要点.
 
 ### 2. Plan
 
@@ -53,11 +53,11 @@ Act as **codebase-analyzer** (see `references/codebase-analyzer.md`): Read entry
 
 ### 4. Synthesize for the drawio report
 
-**Pair every Flow diagram with a Summary** on the same page. The diagram shows structure; the Summary explains behavior, context, and **why** major steps or structures exist.
+**Pair every Flow diagram with a Summary** on the same page. The diagram shows structure; the Summary teaches via analogy, plain explanation, and first-principles why.
 
-- **Overview**: title + 要点 + 待验证 if any — **no** metadata block (`drawio-content-guide.md`). Each 要点 item is a plain-language sentence, then the cite alone on the next line (do not mix `` `path:line` `` into the sentence).
+- **Overview**: title + Summary + 要点 + 待验证 if any — **no** metadata block (`drawio-content-guide.md`). Summary uses the same three unlabeled paragraphs as Flow. Each 要点 item is a plain-language sentence, then the cite alone on the next line (do not mix `` `path:line` `` into the sentence). Do not fold analogy/why into 要点.
 - **Flow pages**: one concern each; ~8 content nodes (max 10); each node labeled with short workflow behavior + `path:line` (two lines). Prefer the starter’s rich host/guest/failure vocabulary; use simple process/data/external only when rich scaffolding would be mostly empty.
-- **Summary**: for each major step or structure, state what happens and **why it exists / why it is done that way**, grounded in observed behavior and evidence. Do not require a fixed named-principle checklist.
+- **Summary** (Overview teaching block and every Flow page): three unlabeled paragraphs, in order — (1) analogy (everyday metaphor; no cites), (2) Feynman what/how for a newcomer with short `` `path:line` `` cites, (3) First-Principle why (causal necessity from observed behavior; no named-principle checklist). No on-page subtitles for technique names.
 - Do not invent relationships to make the picture prettier
 
 ### 5. Author the `.drawio` file
@@ -78,7 +78,7 @@ Act as **codebase-analyzer** (see `references/codebase-analyzer.md`): Read entry
    python3 .claude/skills/rc929/scripts/audit_drawio.py FILE --snapshot /tmp/drawio-before.json
    ```
 
-4. Fill **Overview** (title + 要点 + 待验证). For each planned area, add a **Flow** page and draw evidence-backed content. Follow `drawio-editing-rules.md` (XML escaping, cell ID namespaces, preserve non-target pages). Node labels: line 1 = short natural-language behavior; line 2 = `path:line`. Connectors: midpoint attach is fine when waypoints diverge; do not stack overlapping edge segments.
+4. Fill **Overview** (title + Summary + 要点 + 待验证). For each planned area, add a **Flow** page and draw evidence-backed content. Follow `drawio-editing-rules.md` (XML escaping, cell ID namespaces, preserve non-target pages). Node labels: line 1 = short natural-language behavior; line 2 = `path:line`. Connectors: midpoint attach is fine when waypoints diverge; do not stack overlapping edge segments.
 
 5. Re-audit after edits:
 
@@ -105,10 +105,10 @@ Tell the user:
 ## Quality checklist (before delivery)
 
 - [ ] Deliverable authored from scratch (starter not copied into target dir); path matches `drawio-content-guide.md` (or user override)
-- [ ] Overview has title + 要点 (+ 待验证 if needed); **no** question/repo/date/branch/commit block
+- [ ] Overview has Summary (3 unlabeled paragraphs) above 要点 (+ 待验证 if needed); **no** question/repo/date/branch/commit block
 - [ ] Each 要点 item is prose, then cite alone on the next line (no inline cite mixed into the sentence)
 - [ ] Each Flow page: focused diagram + Summary + evidence cites
-- [ ] Each Flow Summary includes causal why for major steps/structures
+- [ ] Each Flow Summary has analogy → Feynman what/how (+ cites) → First-Principle why, with no technique subtitles
 - [ ] Flow pages prefer rich starter vocabulary; simple layout only when rich scaffolding would be empty
 - [ ] Nodes use two-line labels: short workflow behavior + `path:line` (not file/symbol-only titles)
 - [ ] Every diagram node/edge traceable to code (or omitted / listed as 待验证)
@@ -135,9 +135,12 @@ Wait for all explore tasks before authoring the `.drawio`. Main context writes t
 | Stacked overlapping edge segments | Diverge with waypoints or stagger ports |
 | `cp` starter into research dir | Read starter as reference; write new deliverable |
 | Side prose titled Feynman note | Retitle to Summary |
-| Overview still leads with metadata | Delete metadata region; start with title + 要点 |
+| Overview still leads with metadata | Delete metadata region; start with title + Summary + 要点 |
 | Cite jammed into finding prose | Split: sentence, then cite on its own line |
-| Summary only narrates what, not why | Add causal why grounded in observed behavior + cite |
+| Summary missing analogy paragraph | Add unlabeled ¶1 metaphor |
+| Summary only narrates what, skips First-Principle why | Add unlabeled ¶3 causal necessity |
+| Technique names used as on-page subtitles | Remove labels; keep paragraph order only |
+| Analogy/why folded into Overview 要点 | Move teaching to Overview Summary; keep 要点 as finding + cite |
 | Every page forced into empty nested/failure chrome | Use allow-simple when scaffolding would be empty |
 | Agents copy and `~/.agents` diverge | Sync full skill tree after edits |
 | Compressed draw.io XML | Open/save uncompressed; keep `mxGraphModel` in the file |
