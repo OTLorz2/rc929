@@ -21,6 +21,7 @@ Fill the Overview page (do not put a large flowchart here). Match the starter’
 | Region | Required | Content |
 |--------|----------|---------|
 | Title | yes | Short report title (plain text) |
+| Summary | yes | Three unlabeled paragraphs: analogy → Feynman what/how (+ cites) → First-Principle why |
 | 要点 / Key findings | yes | Ordered findings; each item = prose line, then cite line |
 | 待验证 | when needed | Uncertainties; remove the placeholder bullet if none |
 | Hint line | optional | Keep or delete; never replace with a diagram |
@@ -37,9 +38,11 @@ In draw.io HTML labels, put the cite on its own line after `<br>`, wrapped in `<
 
 **Rules**
 
-1. Overview text must be enough that a reader unfamiliar with the codebase understands the answer’s shape before opening Flow pages.
-2. Anything uncertain is listed under 待验证 and is **not** drawn as fact on Flow pages.
-3. Do not mix `` `path:line` `` into the finding sentence; the cite stands alone on the next line.
+1. Overview order: title → Summary → 要点 → 待验证 (optional).
+2. Summary teaches the answer’s shape; 要点 remain the scannable evidence list. Do not fold analogy / Feynman / First-Principle prose into 要点 items.
+3. Overview text (Summary + 要点) must be enough that a reader unfamiliar with the codebase understands the answer’s shape before opening Flow pages.
+4. Anything uncertain is listed under 待验证 and is **not** drawn as fact on Flow pages.
+5. Do not mix `` `path:line` `` into the finding sentence; the cite stands alone on the next line.
 
 ---
 
@@ -51,7 +54,7 @@ Add one Flow page per investigable area. Rename the page to the concern (e.g. `R
 |--------|----------|---------|
 | Page title | yes | Matches the page name / concern |
 | Diagram | yes | Evidence-backed nodes and edges; prefer ~8 content nodes, max 10 |
-| Summary | yes | Plain-language what + **causal why** for major steps/structures; short `` `path:line` `` cites (≥2 sentences) |
+| Summary | yes | Three unlabeled paragraphs: analogy → Feynman what/how (+ cites) → First-Principle why |
 | Style samples | replace | Use real role-colored nodes; delete unused samples |
 
 **Rules**
@@ -64,14 +67,22 @@ Add one Flow page per investigable area. Rename the page to the concern (e.g. `R
 
 ---
 
-## Summary (causal why)
+## Summary (analogy → Feynman → First Principle)
 
-Every Flow page includes a side region titled **Summary**.
+Every Flow page and the Overview teaching block use a region titled **Summary**.
 
-- Explain what the page shows **and why** each major step or structure exists / is done that way.
-- Ground the why in observed behavior and evidence; include short `` `path:line` `` cites.
-- Do **not** require a fixed checklist of named principles (e.g. isolation, least privilege). Causal explanation is enough.
-- Longer why belongs in Summary; edge labels stay short.
+Three unlabeled paragraphs, in order:
+
+1. **Analogy** — one everyday metaphor mapped to this page’s core idea. No `` `path:line` `` cites in this paragraph.
+2. **Explanation (Feynman)** — plain-language what/how, teachable to a newcomer; short `` `path:line` `` cites belong here.
+3. **First Principle** — one short paragraph on why this behavior or structure must exist, grounded in observed code behavior (causal necessity). Not a named-principle vocabulary checklist.
+
+Hard rules:
+
+- No on-page subtitles (`Analogy`, `Explanation`, `First Principle`, etc.).
+- Separate with paragraph breaks only (`<br><br>` in draw.io HTML labels).
+- Longer teaching belongs in Summary; edge labels stay short.
+- Document what IS — no refactor advice.
 
 ---
 

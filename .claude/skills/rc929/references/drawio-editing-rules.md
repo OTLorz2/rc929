@@ -27,8 +27,8 @@ Use with `templates/research-starter.drawio` (reference only) and `scripts/audit
 
 ## Editing rules
 
-- Overview: no metadata block (`question` / `repo` / `date` / `branch` / `commit`). Each 要点 item is plain prose, then the cite alone on the next line.
-- Write a **Summary** beside the diagram (≥2 sentences, plain language, with short `path:line` cites). Include **causal why** for each major step or structure (grounded in observed behavior and evidence); do not require a fixed named-principle checklist.
+- Overview: no metadata block (`question` / `repo` / `date` / `branch` / `commit`). Order: title → Summary (3 unlabeled paragraphs) → 要点 (prose then cite line) → 待验证 when needed.
+- Write a **Summary** with three unlabeled paragraphs: analogy → Feynman what/how (short `path:line` cites) → First-Principle why (causal necessity from observed behavior; no named-principle checklist). Do not use technique names as on-page subtitles.
 - Label content nodes with two lines: short workflow behavior, then `path:line`. Do not use file/symbol-only titles.
 - Prefer rich starter vocabulary (nested host/guest, failure gutter, role colors). Allow simple process/data/external when rich scaffolding would be empty.
 - Mid-side connector attach is fine when waypoints immediately separate tracks; do not leave multiple edges stacked on the same segment.
