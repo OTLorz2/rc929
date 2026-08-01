@@ -9,4 +9,12 @@
 !/.claude/skills/rc929/
 !/.claude/skills/rc929/**
 /.claude/skills/rc929/evals/
+!/docs/
+/docs/*
+!/docs/superpowers/
+/docs/superpowers/*
+!/docs/superpowers/specs/
+!/docs/superpowers/specs/**
+!/docs/superpowers/plans/
+!/docs/superpowers/plans/**
 .gstack/
