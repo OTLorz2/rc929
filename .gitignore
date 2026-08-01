@@ -8,7 +8,6 @@
 /.claude/skills/*
 !/.claude/skills/rc929/
 !/.claude/skills/rc929/**
-/.claude/skills/rc929/evals/
 !/docs/
 /docs/*
 !/docs/superpowers/
