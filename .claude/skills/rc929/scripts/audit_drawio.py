@@ -237,18 +237,22 @@ def audit_page(diagram: ET.Element) -> tuple[list[Issue], dict[str, int]]:
             or "group" in style
         )
         if label and not is_text and not is_container:
-            content_nodes += 1
             boxes.append(Box(cell_id, label, x, y, width, height))
-            if not is_supporting_region(label) and PATH_LINE_IN_LABEL.search(label):
-                issues.append(
-                    Issue(
-                        "warning",
-                        page,
-                        cell_id,
-                        "Content node label contains a source path:line; "
-                        "use a short evidence badge (S1) and put the cite in the Impl map.",
+            if is_supporting_region(label):
+                # Impl map / Summary / legend prose: may contain cites; not process nodes.
+                pass
+            else:
+                content_nodes += 1
+                if PATH_LINE_IN_LABEL.search(label):
+                    issues.append(
+                        Issue(
+                            "warning",
+                            page,
+                            cell_id,
+                            "Content node label contains a source path:line; "
+                            "use a short evidence badge (S1) and put the cite in the Impl map.",
+                        )
                     )
-                )
 
     for index, left in enumerate(boxes):
         for right in boxes[index + 1 :]:
