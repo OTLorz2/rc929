@@ -48,21 +48,23 @@ In draw.io HTML labels, put the cite on its own line after `<br>`, wrapped in `<
 
 ## Flow pages
 
-Add one Flow page per investigable area. Rename the page to the concern (e.g. `Runtime path`, `Error handling`). Match the starter’s Flow visual language (host/guest boundaries, role colors, failure gutter when applicable, Summary region). See `drawio-layout-guide.md` for prefer-rich / allow-simple.
+Add one Flow page per investigable area. Rename the page to the concern (e.g. `Runtime path`, `Error handling`). Match the starter’s Flow visual language (main-path spine, failure gutter, path-color semantics, Impl map, Summary). See `drawio-layout-guide.md`.
 
 | Region | Required | Content |
 |--------|----------|---------|
 | Page title | yes | Matches the page name / concern |
-| Diagram | yes | Evidence-backed nodes and edges; prefer ~8 content nodes, max 10 |
+| Conceptual diagram | yes | Main-path workflow; ≤7 major process nodes, ≤3 decisions, ≤2 failure terminals (split/phase if exceeded); max ~10 content nodes total before split |
+| Impl map | yes (evidence-backed Flows) | Subordinate table: `S1 → path:line` |
 | Summary | yes | Three unlabeled paragraphs: analogy → Feynman what/how (+ cites) → First-Principle why |
-| Style samples | replace | Use real role-colored nodes; delete unused samples |
+| Legend | when >3 visual categories | Path-color meanings |
+| Style samples | replace | Use real path-semantic nodes; delete unused samples |
 
 **Rules**
 
 1. One concern per page. Split runtime, errors, infrastructure, and package topology when combining densifies edges.
-2. Every node and edge must be traceable to code, or omitted / listed under Overview 待验证.
-3. Shorten edge labels; put longer explanation in the Summary.
-4. Prefer the starter’s rich visual language (nested host/guest, failure gutter, role colors). Allow simple process/data/external only when rich scaffolding would be mostly empty.
+2. Every conceptual node/edge must be traceable via the Impl map (or omitted / listed under Overview 待验证).
+3. Shorten edge labels; put longer explanation in the Summary. Prefer Valid / Invalid / Yes / No / Pass / Fail / More children / Complete — not Continue / Next / Return.
+4. Default to main-path chrome. Host/guest nesting only when isolation/sandbox boundaries are real in the researched system.
 5. Prefix new cell IDs with a page-specific namespace (e.g. `rt_`, `err_`).
 
 ---
@@ -86,25 +88,41 @@ Hard rules:
 
 ---
 
-## Node labels
+## Node labels (conceptual)
 
-Content nodes use **two lines**:
+Content nodes on the conceptual diagram use:
 
-1. **Line 1:** short natural-language workflow behavior (verb phrase: what happens in the flow).
-2. **Line 2:** `` `path:line` `` or `` `path:start-end` ``.
+1. **Primary line:** short action-oriented label (verb phrase, prefer 2–7 words).
+2. **Badge:** tiny muted evidence id (`S1`, `V1`, `R1`) — not a file path.
 
-**Forbidden** as the sole label: bare symbols or bare file names (e.g. `Run()`, `cli.go`).
+Decision nodes are questions or conditions (`Proposal valid?`, `More children?`).
 
-Cites may also appear in the Summary and Overview 要点; they do not replace the two-line node pattern.
+**Forbidden on conceptual node faces:** full source paths, line ranges, multi-concern sentences, bare symbols as the sole label (e.g. `Run()`, `cli.go`).
+
+---
+
+## Implementation map (same page)
+
+Required subordinate region titled **Impl map** listing:
+
+```text
+S1 → path/to/file.ext:12-40
+V1 → path/to/file.ext:80-95
+```
+
+If the table would overflow the page, add a focused implementation-mapping Flow page for that concern (exception only).
+
+Overview 要点 and Summary Feynman paragraphs may still use `path:line` cites. Those do not replace the Impl map for Flow evidence.
 
 ---
 
 ## Citation format
 
-- Prefer inline `` `path/to/file.ext:line` `` or `` `path/to/file.ext:start-end` ``.
+- In Impl map and Overview 要点: `` `path/to/file.ext:line` `` or `` `path/to/file.ext:start-end` ``.
 - On Overview 要点, put the cite on its **own line** under the finding (see above).
 - Quoted symbol names are acceptable when a single line is misleading; still name the file.
 - Do not paste large code blocks into the diagram; cite and summarize.
+- Do not put full path:line strings on conceptual node faces.
 
 ---
 
@@ -126,4 +144,5 @@ Tell the user:
 1. Path to the `.drawio` file
 2. Which page to open first (usually Overview, then a named Flow page)
 3. 2–3 sentence factual summary
-4. Any remaining 待验证 items
+4. Chosen abstraction level (brief) and that the Impl map is on the Flow page
+5. Any remaining 待验证 items
