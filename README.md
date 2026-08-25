@@ -7,32 +7,32 @@
 </p>
 
 <p align="center">
-  A Cursor / Claude Code skill that turns codebase research questions into <strong>one</strong> accurate, visual, self-contained HTML report — diagrams first, evidence attached.
+  A Cursor / Claude Code skill that turns codebase research questions into <strong>one</strong> accurate, editable <strong>.drawio</strong> diagram — Overview first, focused flow pages with evidence attached.
 </p>
 
-Ask your AI assistant to explore how code works — data flows, architecture, request lifecycles, agent wiring — and rc929 delivers a single file you open in any browser. No markdown dump, no folder of assets.
+Ask your AI assistant to explore how code works — data flows, architecture, request lifecycles, agent wiring — and rc929 delivers a single draw.io file you open in diagrams.net or Obsidian Draw.io.
 
 ```
 "Trace how a CLI request flows from entry to response in this repo."
-/rc929 How do these agents collaborate? Give me something I can click through.
+/rc929 How do these agents collaborate? Give me something I can open and edit.
 ```
 
 You get **one** file:
 
 ```
-2026-05-24-research-<topic>.html   open in any browser — TOC, Mermaid diagrams, collapsible evidence
+2026-05-24-research-<topic>.drawio   open in draw.io — Overview + flow pages, Feynman notes, path:line cites
 ```
 
 ---
 
 ## What it does
 
-rc929 is a **research workflow skill**, not a CLI tool. The agent reads the live codebase, locates relevant files, traces call paths with `file:line` citations, and synthesizes findings into an interactive HTML page.
+rc929 is a **research workflow skill**, not a CLI tool. The agent reads the live codebase, locates relevant files, traces call paths with `file:line` citations, and synthesizes findings into an uncompressed `.drawio` file.
 
 | Principle | Meaning |
 |-----------|---------|
-| **Accuracy first** | Every claim needs evidence (`path:line` or quoted symbol). Uncertain items are marked **needs verification** and never drawn as fact in diagrams. |
-| **One deliverable** | Exactly one self-contained `.html` (inline CSS/JS; CDN only for fonts/Mermaid if needed). Agent writes `.md` first, then converts via bundled script. |
+| **Accuracy first** | Every claim needs evidence (`path:line` or quoted symbol). Uncertain items are marked **待验证** and never drawn as fact in diagrams. |
+| **One deliverable** | Exactly one uncompressed `.drawio`. Agent copies the starter template, authors pages, then audits with the bundled Python script. |
 | **Document what IS** | No refactors, critiques, or "should" unless you explicitly asked. |
 | **Fresh research** | Reads source code directly — stale docs alone are not enough. |
 
@@ -51,19 +51,20 @@ your-project/
         └── rc929/
             ├── SKILL.md
             ├── scripts/
-            │   └── md-to-html.mjs
+            │   └── audit_drawio.py
+            ├── templates/
+            │   └── research-starter.drawio
             └── references/
-                ├── markdown-report-guide.md
-                ├── html-shell-template.html
-                ├── html-report-guide.md
+                ├── drawio-content-guide.md
+                ├── drawio-layout-guide.md
+                ├── drawio-editing-rules.md
                 ├── codebase-locator.md
-                ├── codebase-analyzer.md
-                └── template-sync-guide.md
+                └── codebase-analyzer.md
 ```
 
 Open your AI assistant in the project — ask a research question in natural language, or type `/rc929` followed by your question to invoke the skill explicitly.
 
-**Requires Node.js 18+** for markdown-to-HTML conversion (no `npm install` needed).
+**Requires Python 3** for `audit_drawio.py` (stdlib only; no `pip install` needed).
 
 ---
 
@@ -84,7 +85,7 @@ How does the auth middleware chain work on an incoming HTTP request?
 You can also specify where to save the report (default: `thoughts/research/`):
 
 ```
-Research the agent tool wiring and save the report as 2026-05-24-research-agents.html
+Research the agent tool wiring and save as 2026-05-24-research-agents.drawio
 ```
 
 ### 2. Slash command
@@ -104,59 +105,37 @@ Use this when you want a guaranteed skill invocation instead of relying on the m
 |------|--------|
 | Data pipeline | "How does data flow from crawl → ingest → analysis?" |
 | Request lifecycle | "Draw the path after CLI startup for one request." |
-| Multi-agent | "How do these agents coordinate? I want something clickable." |
-| Restyle + research | "I dropped a new `template.html` in rc929 — restyle the shell and research X." |
+| Multi-agent | "How do these agents coordinate? I want an editable diagram." |
 
 ---
 
-## What's in the report
+## What's in the diagram
 
-- **Hero diagrams** — 1–2 Mermaid charts answering your question (flowcharts, sequence diagrams, dependency graphs, state machines — chosen by question shape).
-- **Summary** — short bullet list of key findings with inline `file:line` refs.
-- **Evidence panels** — collapsible code snippets with syntax highlighting (`language-*` classes); paths link back to the repo.
-- **Metadata** — repo name/path, date, git branch/commit when available, original question verbatim.
-- **Gaps** — anything marked **needs verification** or left unexplored.
+- **Overview page** — question, metadata, 要点 findings with `file:line` refs, 待验证 gaps.
+- **Flow pages** — one concern per page (~8 nodes, max 10), native draw.io shapes/edges, Feynman note beside the diagram.
+- **Evidence** — short `path:line` citations on nodes and in notes (not separate HTML panels).
+- **Validation** — `audit_drawio.py` checks structure, refs, bounds, overlap, and routing before handoff.
 
-Diagram types are picked up front and only drawn where evidence supports them:
-
-| Question shape | Diagram |
-|----------------|---------|
-| Pipelines, ETL, batch jobs | `flowchart` / `graph` |
-| Module/package dependencies | `graph` |
-| RPC, webhooks, agents | `sequenceDiagram` |
-| State machines | `stateDiagram-v2` |
-| Layered architecture | `flowchart` with subgraphs |
+Page layout follows the bundled draw.io layout guide: left-to-right pipelines, sequence-style multiparty flows, gutters for error paths, split when a page would densify.
 
 ---
 
 ## How it works
 
 ```
-Intake → Plan (2–6 areas) → Locate (WHERE) → Analyze (HOW) → Cross-check → Write Markdown → Convert to HTML → Handoff
+Intake → Plan (2–6 areas) → Locate (WHERE) → Analyze (HOW) → Cross-check → Author .drawio → Audit → Handoff
 ```
 
 1. **Intake** — Confirm the question; read any files you named fully before exploring.
-2. **Plan** — Split into investigable areas; choose diagram types.
+2. **Plan** — Split into investigable areas; decide Flow page splits.
 3. **Locate** — Grep/Glob for keywords and naming patterns; group files by role (no deep reads yet).
 4. **Analyze** — Read entry points; trace calls and data transforms; record `file:line` for each step.
 5. **Cross-check** — Re-read critical paths; remove diagram nodes/edges without citations. Code wins over stale docs.
-6. **Write Markdown** — Write `<YYYY-MM-DD>-research-<topic>.md` per `references/markdown-report-guide.md`.
-7. **Convert** — Run `node .claude/skills/rc929/scripts/md-to-html.mjs <path.md>` to produce the HTML report.
-8. **Handoff** — Path to the HTML file, 2–3 sentence summary, where to start reading, any open gaps.
+6. **Author** — Copy `templates/research-starter.drawio`, fill Overview, duplicate Flow pages per concern.
+7. **Audit** — Run `python3 .claude/skills/rc929/scripts/audit_drawio.py <path.drawio>` (with snapshot/baseline when editing).
+8. **Handoff** — Path to the `.drawio` file, 2–3 sentence summary, which page to open first, any open gaps.
 
-Parallel subagents may run for independent exploration areas. Template sync (see below) always runs in a subagent so the main context stays free for research.
-
----
-
-## Customize report style
-
-Drop a new `template.html` into `.claude/skills/rc929/` (alongside `SKILL.md`), then ask the assistant to research something. The skill detects the file, spawns a subagent to:
-
-1. Extract UI structure, CSS, JS, and layout from your template (ignoring sample research content).
-2. Update `references/html-shell-template.html` and `references/html-report-guide.md` to match.
-3. Delete `template.html` from the skill root.
-
-Sample HTML templates for inspiration live in [`templates/`](templates/) at the repo root.
+Parallel subagents may run for independent exploration areas. The main context authors the `.drawio` and runs the audit.
 
 ---
 
@@ -164,22 +143,21 @@ Sample HTML templates for inspiration live in [`templates/`](templates/) at the 
 
 | Path | Purpose |
 |------|---------|
-| `.claude/skills/rc929/` | Skill definition, HTML shell, exploration guides |
-| `templates/` | Example report templates you can adapt |
-| `rc929-workspace/` | Skill development iterations and eval artifacts |
-| `codebase-locator.md`, `codebase-analyzer.md` | Standalone copies of exploration reference docs |
+| `.claude/skills/rc929/` | Skill definition, starter diagram, exploration + drawio guides |
+| `docs/superpowers/specs/` | Design specs |
+| `docs/superpowers/plans/` | Implementation plans |
 
-Research output HTML files default to `thoughts/research/` in the project root. You can override this by specifying a path. They are **not** bundled inside the skill folder.
+Research output `.drawio` files default to `thoughts/research/` in the project root. You can override this by specifying a path. They are **not** bundled inside the skill folder.
 
 ---
 
 ## Tips
 
-**Prefer visual questions.** rc929 shines when the answer benefits from diagrams and navigation — architecture, flows, dependencies — not one-line lookups.
+**Prefer visual questions.** rc929 shines when the answer benefits from diagrams — architecture, flows, dependencies — not one-line lookups.
 
 **Name entry points if you know them.** "Start from `main.go`" or "focus on the `Worker` class" speeds up analysis.
 
-**Check unverified items.** The report explicitly flags claims that could not be fully verified in source.
+**Check 待验证 items.** The Overview page flags claims that could not be fully verified in source.
 
 **Don't expect refactors.** The skill documents current behavior. Ask separately if you want improvement suggestions.
 
@@ -188,6 +166,6 @@ Research output HTML files default to `thoughts/research/` in the project root. 
 ## Learn more
 
 - [SKILL.md](.claude/skills/rc929/SKILL.md) — full workflow, quality checklist, failure modes
-- [markdown-report-guide.md](.claude/skills/rc929/references/markdown-report-guide.md) — markdown schema for agent-authored reports
-- [html-report-guide.md](.claude/skills/rc929/references/html-report-guide.md) — page structure, Mermaid rules, UI conventions
-- [template-sync-guide.md](.claude/skills/rc929/references/template-sync-guide.md) — how template restyling works
+- [drawio-content-guide.md](.claude/skills/rc929/references/drawio-content-guide.md) — in-diagram Overview / Feynman / citation rules
+- [drawio-layout-guide.md](.claude/skills/rc929/references/drawio-layout-guide.md) — page layout and connector routing
+- [drawio-editing-rules.md](.claude/skills/rc929/references/drawio-editing-rules.md) — XML editing and audit expectations
